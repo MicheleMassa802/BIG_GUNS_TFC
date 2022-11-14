@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from Subscriptions.serializers import PaymentHistorySerializer, SubscriptionSerializer
+from Subscriptions.serializers import PaymentHistorySerializer, SubscriptionSerializer, SubscriptionUpdateSerializer, PaymentHistoryUpdateSerializer
   
 
 # Subscription 'CRUD' View
@@ -94,9 +94,10 @@ class SubscriptionView(APIView):
         post_data = request.data
 
         original_sub_type = sub.sub_type  # get the original sub type for later use
+        original_date = sub.sub_start_date  # get the original sub start date for later use
 
-        # update the subscription object
-        sub_upt_serializer = self.serializer_class(sub, data=post_data)
+        # update the subscription object except for the sub_start_date
+        sub_upt_serializer = SubscriptionUpdateSerializer(sub, data=post_data)
         if not sub_upt_serializer.is_valid():
             return Response(sub_upt_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -106,7 +107,7 @@ class SubscriptionView(APIView):
         # we create a copy of the post data to use for the serialization of the payment history objects
         post_data_copy = post_data.copy()
         post_data_copy['payment_amount'] = post_data['sub_type']  # sub type in subscription == payment amount in payment history
-        post_data_copy['payment_date'] = post_data['sub_start_date']  # sub start date in subscription == day of payment in payment history
+        post_data_copy['payment_date'] = str(original_date)  # sub start date in subscription == day of payment in payment history
 
         if post_data['sub_type'] == str(14.99):
             extra_days = 30
@@ -120,15 +121,13 @@ class SubscriptionView(APIView):
 
         # create the payment history object with the following date
         date_plus_extra = sub.sub_start_date + timedelta(days=original_extra_days)
-        print(date_plus_extra)
 
         # then update the current and future payment history objects
         payment1 = PaymentHistory.objects.filter(related_user=request.user, payment_date=sub.sub_start_date).first()
         payment2 = PaymentHistory.objects.filter(related_user=request.user, payment_date=date_plus_extra).first()
-        print(payment1, payment2)
         
         # update the first payment history object
-        payment_upt_serializer = PaymentHistorySerializer(payment1, data=post_data_copy)
+        payment_upt_serializer = PaymentHistoryUpdateSerializer(payment1, data=post_data_copy)
         if not payment_upt_serializer.is_valid():
             return Response(payment_upt_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -138,15 +137,14 @@ class SubscriptionView(APIView):
         # update the second payment history object
         post_data_copy['payment_date'] = sub.sub_start_date + timedelta(days=extra_days)
 
-        payment_upt_serializer = PaymentHistorySerializer(payment2, data=post_data_copy)
+        payment_upt_serializer = PaymentHistoryUpdateSerializer(payment2, data=post_data_copy)
         if not payment_upt_serializer.is_valid():
             return Response(payment_upt_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # otherwise, save the update
         payment_upt_serializer.update(payment2, payment_upt_serializer.validated_data)
 
-        # return the subscription object just created
-        return Response(sub_upt_serializer.data, status=status.HTTP_202_ACCEPTED)
-
+        # return the updated subscription object corresponding to the user
+        return Response(self.serializer_class(Subscription.objects.get(related_user=request.user)).data, status=status.HTTP_200_OK)
 
     def delete(self, request, *args, **kwargs):
         # make sure user is subscribed
