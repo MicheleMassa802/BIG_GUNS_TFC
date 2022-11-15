@@ -21,9 +21,53 @@ class SubscriptionView(APIView):
         # get user id and check if user is in subscription table
         filtered_sub = Subscription.objects.filter(related_user=request.user)
 
-        # return the subscription info of this user
-        if filtered_sub.exists():
-            return Response(self.serializer_class(filtered_sub.first()).data)
+        if filtered_sub.exists():  # even if its an older subscription, we first update, and then return the updated object
+            
+            # If the user visits this page and is subscribed, we are going to check if their subscription and payment history
+            # are up to date. If they are not, we will update them and the user will be charged accoridingly 
+            # We decided to implement this feature in this specific url as its the time when the user is most likely to be
+            # check / cancel their subscription, and we update it at the GET so that they are charged before they can cancel
+
+            todays_date = datetime.now().date()
+            sub = filtered_sub.first()
+
+            # determine the subscription period
+            if sub.sub_type == 14.99:
+                extra_days = 30
+            else:
+                extra_days = 365
+
+            # determine the last payment date
+            last_payment = PaymentHistory.objects.filter(related_user=request.user).order_by('-payment_date').first()
+            last_payment_date = last_payment.payment_date
+
+            if last_payment_date > todays_date:
+                # all good, the next subscription period (not yet started but in payment history) is covered, no need to update sub
+                pass
+            
+            else:
+                # for each extra_days length period that has passed since the last payment, we will charge the user and update the sub start date
+                while last_payment_date <= todays_date:
+                    # update the sub start date when at the last payment period before being up to date
+                    if last_payment_date + timedelta(days=extra_days) > todays_date:
+                        sub.sub_start_date = last_payment_date
+                        sub.save()
+
+                    # create the payment history object with the following date that is extra_days away by transforming
+                    data = {'payment_amount': last_payment.payment_amount, 'payment_date': str(last_payment_date + timedelta(days=extra_days)),
+                     'related_user': request.user.id, 'payment_card': last_payment.payment_card}
+                    payment_serializer = PaymentHistorySerializer(data=data)
+                    if not payment_serializer.is_valid():
+                        return Response(payment_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    
+                    # else
+                    payment_serializer.save()
+                    last_payment_date += timedelta(extra_days)  # update loop variable
+
+
+            return Response(self.serializer_class(sub).data)
+
+
         else:
             return Response({'message': 'User is not subscribed'})
 
@@ -37,8 +81,11 @@ class SubscriptionView(APIView):
 
         # create a new subscription object using the post data
         
-        post_data = request.data
-        sub_serializer = self.serializer_class(data=post_data)
+        post_data_copy = request.data.copy()
+        # overwrite the sub_start_date to be the current date and user to be the current user
+        post_data_copy['sub_start_date'] = str(datetime.now().date())
+        post_data_copy['related_user'] = request.user.id
+        sub_serializer = self.serializer_class(data=post_data_copy)
         
         if not sub_serializer.is_valid():
             return Response(sub_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -48,15 +95,14 @@ class SubscriptionView(APIView):
         
         # after saving the created subscription object, we need to create the payment history objects
 
-        if post_data['sub_type'] == str(14.99):
+        if post_data_copy['sub_type'] == str(14.99):
             extra_days = 30
         else:
             extra_days = 365
 
         # we create a copy of the post data to use for the serialization of the payment history objects
-        post_data_copy = post_data.copy()
-        post_data_copy['payment_amount'] = post_data['sub_type']  # sub type in subscription == payment amount in payment history
-        post_data_copy['payment_date'] = post_data['sub_start_date']  # sub start date in subscription == day of payment in payment history
+        post_data_copy['payment_amount'] = request.data['sub_type']  # sub type in subscription == payment amount in payment history
+        post_data_copy['payment_date'] = post_data_copy['sub_start_date']  # sub start date in subscription == day of payment in payment history
         
         # create the payment history object with todays date
         payment_serializer = PaymentHistorySerializer(data=post_data_copy)
@@ -68,7 +114,7 @@ class SubscriptionView(APIView):
 
         # create the payment history object with the following date that is extra_days away by transforming
         # post_data['sub_start_date'] into a datetime object
-        date_plus_extra = datetime.strptime(post_data['sub_start_date'], '%Y-%m-%d') + timedelta(days=extra_days)
+        date_plus_extra = datetime.strptime(post_data_copy['sub_start_date'], '%Y-%m-%d') + timedelta(days=extra_days)
         post_data_copy['payment_date'] = datetime.date(date_plus_extra)
 
         payment_serializer = PaymentHistorySerializer(data=post_data_copy)
@@ -145,6 +191,7 @@ class SubscriptionView(APIView):
 
         # return the updated subscription object corresponding to the user
         return Response(self.serializer_class(Subscription.objects.get(related_user=request.user)).data, status=status.HTTP_200_OK)
+
 
     def delete(self, request, *args, **kwargs):
         # make sure user is subscribed

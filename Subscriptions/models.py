@@ -12,7 +12,8 @@ PAYMENT_AMOUNTS = (
 class Subscription(models.Model):
     sub_type = models.FloatField(choices=PAYMENT_AMOUNTS)
     related_user = models.OneToOneField(to=User, on_delete=models.CASCADE) # comes from the user model
-    sub_start_date = models.DateField()  # date the subscription starts
+    sub_start_date = models.DateField()  # date the subscription starts 
+    # (I dont use auto_now since a model instance should be changeable with the same date)
     payment_card = models.CharField(max_length=16)  # which we ask the user for at time of subscription
 
     def __str__(self):
