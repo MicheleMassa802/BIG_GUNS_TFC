@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from Subscriptions.serializers import PaymentHistorySerializer, SubscriptionSerializer, SubscriptionUpdateSerializer, PaymentHistoryUpdateSerializer
-  
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
 # Subscription 'CRUD' View
 # I'll say that we would have tried to do the proper CreateApiView, UpdateApiView, DestroyApiView, ... but 
@@ -18,8 +18,16 @@ class SubscriptionView(APIView):
 
 
     def get(self, request, *args, **kwargs):
+        
+        user_to_get = kwargs['user_id']
+        
         # get user id and check if user is in subscription table
         filtered_sub = Subscription.objects.filter(related_user=request.user)
+
+        # make sure user is only looking over info for themselves, admins not considered as they are to use the admin panel
+        if request.user.id != user_to_get:
+            # forbidden 403 otw, as user is not allowed to look at other users' info
+            return Response({'message': 'User is forbidden from viewing this information'}, status=status.HTTP_403_FORBIDDEN)
 
         if filtered_sub.exists():  # even if its an older subscription, we first update, and then return the updated object
             
@@ -55,7 +63,7 @@ class SubscriptionView(APIView):
 
                     # create the payment history object with the following date that is extra_days away by transforming
                     data = {'payment_amount': last_payment.payment_amount, 'payment_date': str(last_payment_date + timedelta(days=extra_days)),
-                     'related_user': request.user.id, 'payment_card': last_payment.payment_card}
+                     'related_user': request.user, 'payment_card': last_payment.payment_card}
                     payment_serializer = PaymentHistorySerializer(data=data)
                     if not payment_serializer.is_valid():
                         return Response(payment_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -221,6 +229,14 @@ class PaymentHistoryView(ListAPIView):
     serializer_class = PaymentHistorySerializer
 
     def get_queryset(self):
+
+        user_to_get = self.kwargs['user_id']
+
+        # make sure user is only looking over info for themselves (forbidden 403 otw)
+        if self.request.user.id != user_to_get:
+            raise PermissionDenied(
+                {'message': 'User is forbidden from viewing this information'}
+            )
 
         payment_history = PaymentHistory.objects.filter(related_user=self.request.user)
 
