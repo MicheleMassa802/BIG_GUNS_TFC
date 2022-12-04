@@ -1,5 +1,0 @@
-Django==4.1.2
-djangorestframework==3.14.0
-djangorestframework-simplejwt==5.2.2
-markdown==3.4.1
-geopy==2.3.0
