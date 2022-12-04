@@ -11,7 +11,7 @@ export const usePHContext = () => {
 
 export const PH_context = createContext(
 {
-    payment: null,
+    payment_list: null,
     setPayments: () => {},
 }
 );

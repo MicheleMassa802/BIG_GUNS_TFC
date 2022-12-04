@@ -21,7 +21,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="payments" element={payments} />
+          <Route index element={payments} />
         </Route>
       </Routes>
     </BrowserRouter>
