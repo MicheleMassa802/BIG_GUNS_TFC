@@ -5,9 +5,9 @@ const Layout = () => {
         <>
             <header>
                 <Link to="/"> Home </Link>
-                <Link to="about"> About </Link>
-                <Link to="contact"> Contact </Link>
-                <Link to="payments"> Payments </Link>
+                <Link to="subscription"> Your Subscription </Link>
+                <Link to="payment_history"> Your Payment History </Link>
+                <Link to="about_us"> About Us </Link>
             </header>
             <Outlet />
         </>
