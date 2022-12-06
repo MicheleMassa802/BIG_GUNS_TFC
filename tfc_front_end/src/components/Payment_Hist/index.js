@@ -9,7 +9,7 @@ const PaymentHist = () => {
         page: 1,  // all pages grabbed from API by default
         perPage: perPage,  // api returns 4 by default
         user_id: 1,  // for now default is 1, see how to set this up correctly using the global context
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwMjE5MjQ4LCJpYXQiOjE2NzAxMzI4NDgsImp0aSI6Ijk3OTAxMWE5YTZhNDQ5NjQ4ZjkyNmFiYTc1NDc1MzM1IiwidXNlcl9pZCI6MX0.hNPDXaHo7noxzW5j67UpnVX0y7aXRIcaJLVrErVXY64',
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwMzc4OTM5LCJpYXQiOjE2NzAyOTI1MzksImp0aSI6IjgxN2JmZjBiYTEwMTRkMjQ5ZDM5NTBkNTFiNmQxOGRkIiwidXNlcl9pZCI6MX0.rkoVPsruqjspMM9fwDdMmJNrpEGDSvVNaYGfACqq4NA',
     });
 
     const { setPayments } = useContext(PH_context);

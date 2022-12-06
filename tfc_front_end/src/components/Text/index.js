@@ -4,8 +4,7 @@ import React from "react";
 
 class Text extends React.Component {
     render(){
-        const { text } = this.props;
-        return <h1>{text}<br/></h1>
+        return <h1>{this.props.children}</h1>
     }
 }
 
