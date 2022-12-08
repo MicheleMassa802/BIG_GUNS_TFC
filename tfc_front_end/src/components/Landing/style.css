@@ -1,0 +1,41 @@
+.container{
+    margin-top: 10%;
+    margin-left: 20%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+}
+
+.grid{
+    align-items: center;
+    margin: 50px;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: row;
+}
+
+/* p{
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 80px;
+    color: white;
+    background-color: black;
+    width: 30%;
+} */
+
+h1{
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 80px;
+    color: white;
+    background-color: black;
+    width: 40%;
+}
+
+img{
+    height: 40%;
+    width: 40%;
+}

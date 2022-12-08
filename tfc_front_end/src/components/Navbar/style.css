@@ -1,0 +1,43 @@
+.navigation{
+    position: sticky;
+    top: 0;
+    /* display: flex; */
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    align-content: center;
+}
+
+.logo{
+    margin-left: 45%;
+    font-size: 75px;
+    color: white;
+    font-weight: bolder;
+}
+
+.paths{
+    display: flex;
+    margin-left: 7%;
+
+}
+
+.items{
+    display: flex;
+    margin: 10px;
+    list-style: none;
+}
+
+li{
+     margin: 0 2rem;
+}
+
+a{
+    text-decoration: none;
+    color: white;
+    transition-duration: 0.4s;
+    padding: 10px;
+}
+
+a:hover{
+    border: 2px solid white;
+}

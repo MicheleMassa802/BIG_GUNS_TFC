@@ -32,8 +32,8 @@ const Sub_Creator = () => {
     const {subData, setData} = useContext(Sub_context);
 
     const [params, setParams] = useState({
-        user_id: 1,  // for now default is 1, see how to set this up correctly using the global context
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwMzc4OTM5LCJpYXQiOjE2NzAyOTI1MzksImp0aSI6IjgxN2JmZjBiYTEwMTRkMjQ5ZDM5NTBkNTFiNmQxOGRkIiwidXNlcl9pZCI6MX0.rkoVPsruqjspMM9fwDdMmJNrpEGDSvVNaYGfACqq4NA',
+        user_id: localStorage.getItem('user_id'),  // for now default is 1, see how to set this up correctly using the global context
+        token: localStorage.getItem('accessToken'),
     });
 
     // make a get request to get the user's sub object if it exists, return true and set the data to the sub object
@@ -46,7 +46,7 @@ const Sub_Creator = () => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `${token}`,
             }
         };
         fetch(url, config)
@@ -92,7 +92,7 @@ const Sub_Creator = () => {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`,
+                        "Authorization": `${token}`,
                     },
                     body: JSON.stringify(uploadData),
                 };

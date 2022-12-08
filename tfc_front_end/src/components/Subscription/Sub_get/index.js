@@ -11,11 +11,12 @@ const Get_Sub = () => {
 
    
     const [params, setParams] = useState({
-        user_id: 1,  // for now default is 1, see how to set this up correctly using the global context
-        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwMzc4OTM5LCJpYXQiOjE2NzAyOTI1MzksImp0aSI6IjgxN2JmZjBiYTEwMTRkMjQ5ZDM5NTBkNTFiNmQxOGRkIiwidXNlcl9pZCI6MX0.rkoVPsruqjspMM9fwDdMmJNrpEGDSvVNaYGfACqq4NA',
+        user_id: localStorage.getItem('user_id'),  // for now default is 1, see how to set this up correctly using the global context
+        token: localStorage.getItem('accessToken'),
     });
 
     const {user_id, token} = params;
+    console.log(user_id)
     //console.log("First data", subData);
 
     // create get request to backend, then get the response and carry out the corresponding procedure
@@ -27,7 +28,7 @@ const Get_Sub = () => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `${token}`,
             }
         };
         fetch(url, config)
