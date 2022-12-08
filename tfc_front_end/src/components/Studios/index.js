@@ -30,7 +30,7 @@ const AllStudioView = () => {
     useEffect(() => {
         const {page, perPage} = params;
         // send a request to the API to get the payments with that url, a header and a body
-        const url = `http://127.0.0.1:8000/studios/20/30/all/`
+        const url = `http://localhost:8000/studios/20/30/all/`
         const config = {
             method: "GET",
             headers:{

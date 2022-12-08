@@ -7,7 +7,7 @@
 }
 
 body{
-  background-image: url('./Components/assets/pf\ bg2.jpg');
+  background-image: url('./components/assets/pf_bg2.jpg');
   background-size: cover;
   background-repeat: repeat-y;
   width: 100%;
@@ -15,8 +15,12 @@ body{
 }
 Text{
   text-align: center;
+  /* color: white;
+  /* set font to imported font */
+  /* font-family: 'Montserrat', sans-serif; */
   
 }
+
 /* .App {
   text-align: center;
 }

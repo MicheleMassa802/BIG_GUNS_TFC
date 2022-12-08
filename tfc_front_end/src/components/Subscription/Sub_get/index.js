@@ -3,6 +3,7 @@ import { Sub_context } from "../../../Contexts/Sub_context";
 import Text from "../../Text";
 import { useEffect, useState, useContext } from "react";
 import Sub_object from "./Sub_getter_template";
+import "./styles.css";
 
 // component for getting a subscription
 
@@ -55,7 +56,7 @@ const Get_Sub = () => {
 
     // if subData is set, then return the data
    return (
-        <div>
+        <div className="container">
             <Sub_object></Sub_object>
         </div>
    )

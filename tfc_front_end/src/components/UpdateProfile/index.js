@@ -14,7 +14,7 @@ const Update = () =>{
     function submit_update(submission){
         submission.preventDefault();
         const { user_id } = localStorage.getItem('user_id')
-        const url = `http://127.0.0.1:8000/accounts/${user_id}/update/`
+        const url = `http://localhost:8000/accounts/${user_id}/update/`
         const config = {
             method: "PATCH",
             headers:{

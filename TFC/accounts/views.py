@@ -11,6 +11,23 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
 
 # Create your views here.
+
+class GetUser(RetrieveAPIView):
+    queryset = user.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        return Response(self.request.user.id)
+    
+class GetProfile(RetrieveAPIView):
+    queryset = user.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, *args, **kwargs):
+        return Response(self.request.user)
+
 class CreateUserView(CreateAPIView):
     model = user
     serializer_class = UserSerializer

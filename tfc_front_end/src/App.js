@@ -3,21 +3,21 @@ import {PH_context, usePHContext} from './Contexts/PH_context';
 import StudiosContext from './Contexts/studios_all';
 import { useStudiosContext } from './Contexts/studios_all';
 import './App.css';
-import Navbar from './Components/Navbar';
-import Landing from './Components/Landing';
-import Logval from './Components/Login';
-import Logout from './Components/Logout';
-import Register from './Components/Register';
-import Update from './Components/UpdateProfile';
-import PaymentHist from './Components/Payment_Hist';
-import CreateSub from './Components/Subscription/Sub_Create';
-import Text from './Components/Text';
+import Navbar from './components/Navbar';
+import Landing from './components/Landing';
+import Logval from './components/Login';
+import Logout from './components/Logout';
+import Register from './components/Register';
+import Update from './components/UpdateProfile';
+import PaymentHist from './components/Payment_Hist';
+import CreateSub from './components/Subscription/Sub_Create';
+import Text from './components/Text';
 import { useContext, useEffect, useState } from "react";
 import { useSubContext, Sub_context } from "./Contexts/Sub_context";
-import Get_Sub from './Components/Subscription/Sub_get';
-import Update_Sub from './Components/Subscription/Sub_update';
-import Delete_sub from './Components/Subscription/Sub_del';
-import AllStudioView from './Components/Studios';
+import Get_Sub from './components/Subscription/Sub_get';
+import Update_Sub from './components/Subscription/Sub_update';
+import Delete_sub from './components/Subscription/Sub_del';
+import AllStudioView from './components/Studios';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 function App() {
@@ -76,7 +76,7 @@ function App() {
               <Route path="/create_sub" element={createSub} />
               <Route path="/update_sub" element={updateSub} />
               <Route path="/cancel_sub" element={cancelSub} />
-              <Route path="/payment_history" element={payments} />
+              <Route path="/payments" element={payments} />
               <Route path="/about" element={about} />
               <Route path="/studios" element={studios} />
             </Route>

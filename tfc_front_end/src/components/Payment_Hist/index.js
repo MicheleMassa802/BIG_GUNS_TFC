@@ -1,14 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import PaymentHistTable from "./Payment_Hist_Table";
 import {PH_context} from "../../Contexts/PH_context";
+import "./styles.css";
 // import axios from 'axios';
 
 const PaymentHist = () => {
-    const perPage = 15;
+    const perPage = 8;
     const [params, setParams] = useState({
         page: 1,  // all pages grabbed from API by default
-        perPage: perPage,  // api returns 4 by default
-        user_id: localStorage.getItem('user_id'),  // for now default is 1, see how to set this up correctly using the global context
+        perPage: perPage,  // api returns 8 by default
+        user_id: localStorage.getItem('user_id'),
         token: localStorage.getItem('accessToken'),
     });
 
@@ -17,7 +18,7 @@ const PaymentHist = () => {
     useEffect(() => {
         const {page, perPage, user_id, token} = params;
         // send a request to the API to get the payments with that url, a header and a body
-        const url = `http://localhost:8000/subscriptions/${user_id}/payment_history/`;
+        const url = `http://localhost:8000/subscriptions/${user_id}/payment_history/?page=${page}`;
         const config = {
             headers: {
                 "Content-Type": "application/json",
@@ -35,17 +36,19 @@ const PaymentHist = () => {
     }, [params, setPayments]);
 
     return (
-        <>
+        <div className="outer-container">
             <PaymentHistTable perPage={perPage} params={params} />
-            <button onClick={() => setParams({
-                ...params,
-                page: Math.max(1, params.page - 1)})}> prev 
-            </button>
-            <button onClick={() => setParams({
-                ...params,
-                page: params.page + 1})}> next
-            </button>
-        </>
+            <div className="buttons">
+                <button onClick={() => setParams({
+                    ...params,
+                    page: Math.max(1, params.page - 1)})}> prev 
+                </button>
+                <button onClick={() => setParams({
+                    ...params,
+                    page: params.page + 1})}> next
+                </button>
+            </div>
+        </div>
     )
 }
 

@@ -24,7 +24,7 @@ const Logval = () => {
     function submit_login(submission){
         submission.preventDefault();
 
-        const url = 'http://127.0.0.1:8000/accounts/api/token/'
+        const url = 'http://localhost:8000/accounts/api/token/'
         const config = {
             method: "POST",
             headers:{
@@ -38,7 +38,7 @@ const Logval = () => {
                 if (data.access) {
                     localStorage.setItem('accessToken', 'Bearer ' + data.access);
                     if (localStorage.getItem("accessToken") !== null){
-                        const url2 = 'http://127.0.0.1:8000/accounts/user/'
+                        const url2 = 'http://localhost:8000/accounts/user/'
                         const config2 = {
                             method: "GET",
                             headers:{

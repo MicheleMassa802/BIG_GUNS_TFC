@@ -15,7 +15,7 @@ const Register = () =>{
     function submit_register(submission){
         submission.preventDefault();
 
-        const url = 'http://127.0.0.1:8000/accounts/register/'
+        const url = 'http://localhost:8000/accounts/register/'
         const config = {
             method: "POST",
             headers:{

@@ -15,35 +15,20 @@ from rest_framework.authentication import SessionAuthentication
 
 # Create your views here.
 
-class AllStudiosView(ListAPIView):
-    serializer_class = StudioSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        current_coordinates = (self.kwargs['lat'], self.kwargs['long'])
-        sorted_studios = []
-        for studio in Studio.objects.all():
-            studio_coordinates = (studio.latitude, studio.longitude)
-            sorted_studios.append((geodesic(studio_coordinates, current_coordinates).kilometers, studio))
-
-        sorted_studios = sorted(sorted_studios)
-        return [studio[1] for studio in sorted_studios]
-
-
 class StudioView(RetrieveAPIView):
     queryset = Studio.objects.all()
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     # authentication_classes = [IsAuthenticated]
     serializer_class = StudioSerializer
 
-    # def get(self, request, *args, **kwargs):
-    #     return get_object_or_404(Studio, id=kwargs['studio_pk'])
+    def get(self, request, *args, **kwargs):
+        return Response(self.serializer_class(Studio.objects.get(name=kwargs['studio'])).data)
 
 
 class FilterStudioView(ListAPIView):
     serializer_class = StudioSerializer
     # authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         # returns all studios paginated initially

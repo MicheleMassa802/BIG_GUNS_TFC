@@ -3,6 +3,7 @@ import Text from "../../Text";
 import Button from "../../Input/button";
 import { Sub_context } from "../../../Contexts/Sub_context";
 import { useContext } from "react";
+import "./styles.css";
 
 
 // get the data from the user and send it to the backend to create as subscription
@@ -49,15 +50,23 @@ const Delete_sub = () => {
             console.log("GET")
             // if the user has a sub, set the data to the sub object and return true
             if (data.message === undefined){
+                console.log("sub")
                 // user has a sub, add is_backend to data and set the data to the sub object
                 localSetData({data, is_backend: true});
                 return true;
             } else {
+                console.log("no sub")
                 // user doesn't have a sub, add is_backend to data and set the data to the sub object
-                localSetData({data, is_backend: false});
+                localSetData({is_backend: false});
                 return false;
             }
-        });
+        })
+        .catch((error) => {
+            const newData = {...local_sub_data};
+            newData["is_backend"] = false;
+            localSetData(newData);
+            console.log(newData, error);
+    });
 
     }
 
@@ -90,15 +99,16 @@ const Delete_sub = () => {
                 };
 
                 fetch(url, config)
-                // .then((response) => response)
+                .then((response) => response)
                 .then((data) => {
+                    localSetData({"is_backend": false});
+            
+                    console.log("DELETE MSG", data);
+                })
+                .catch((error) => {
                     const newData = {...local_sub_data};
                     newData["is_backend"] = false;
                     localSetData(newData);
-                    console.log("DELETE MSG", data);
-                    Is_subbed();
-                })
-                .catch((error) => {
                     console.log(error);
                 });
 
@@ -108,21 +118,24 @@ const Delete_sub = () => {
     if (local_sub_data["is_backend"] === false){
         // data coming from backend means user is subbed
         return (
-            <div>
+            <div className="container">
                 {/* <Text> Subscription Details </Text>
                 <Text> User: {sub_data.related_user} </Text>
                 <Text> Subscription Type: {sub_data.sub_type} </Text>
                 <Text> Subscription Start Date: {sub_data.sub_start_date} </Text>
                 <Text> Payment Card: {sub_data.payment_card} </Text> */}
-                <p> Cant delete what you dont have </p>
+                <p> You must be subscribed in order to cancel a subscription.</p>
+                <p> What are you waiting for to join the club?</p>
             </div>
                 
         );
     } else {
         
         return (
-            <div>
-                <p> Dont you even think of leaving me you bastard </p>
+            <div className="container">
+                <p> Dow you wish to cancel your subscription? </p>
+                <p> Keep in mind, this will immediately cancel your active membership for the current subscription period   </p>
+                <p> Your current classes will be cancelled, and only re-instated upon re-subscription.</p>
                 <form onSubmit={Submit_delete}>
                     <Button label="Cancel Subscription"/>
                 </form>

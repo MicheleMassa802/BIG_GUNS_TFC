@@ -2,8 +2,8 @@ import React, {useContext, useEffect, useState} from "react";
 import Text from "../../Text";
 import Input from "../../Input/input";
 import Button from "../../Input/button";
-import CreateSubForm from "./create_form";
 import Sub_context from "../../../Contexts/Sub_context";
+import "./styles.css";
 
 // get the data from the user and send it to the backend to create as subscription
 
@@ -124,20 +124,20 @@ const Sub_Creator = () => {
     if (local_sub_data["is_backend"] === true){
         // data coming from backend means user is subbed
         return (
-            <div>
+            <div className="container">
                 {/*<Text> Subscription Details </Text>
                 <Text> User: {data.related_user} </Text>
                 <Text> Subscription Type: {data.sub_type} </Text>
                 <Text> Subscription Start Date: {data.sub_start_date} </Text>
                 <Text> Payment Card: {data.payment_card} </Text>*/}
-                <p> You are already subscribed silly goose :0 </p>
+                <p> You are subscribed. Welcome to TFC! </p>
             </div>
                 
         );
     } else {
         return (
-            <div>
-                <p> You are not yet subscribed.Subscribe Here! </p>
+            <div className="container">
+                <p> You are not yet subscribed. Subscribe Here! </p>
                 <form onSubmit={Submit_form}>
                     <label> Subscription Type: </label>
                     {/* call respective handling functions*/}

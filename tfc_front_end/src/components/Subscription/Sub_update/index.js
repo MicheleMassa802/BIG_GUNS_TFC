@@ -3,6 +3,7 @@ import Text from "../../Text";
 import Button from "../../Input/button";
 import { Sub_context } from "../../../Contexts/Sub_context";
 import { useContext } from "react";
+import "./styles.css";
 
 
 // get the data from the user and send it to the backend to create as subscription
@@ -128,13 +129,14 @@ const Update_Sub = () => {
     if (local_sub_data["is_backend"] === false){
         // data coming from backend means user is subbed
         return (
-            <div>
+            <div className="container">
                 {/* <Text> Subscription Details </Text>
                 <Text> User: {sub_data.related_user} </Text>
                 <Text> Subscription Type: {sub_data.sub_type} </Text>
                 <Text> Subscription Start Date: {sub_data.sub_start_date} </Text>
                 <Text> Payment Card: {sub_data.payment_card} </Text> */}
-                <p> You are not subscribed you silly goose :0 </p>
+                <p> You must be subscribed in order to update your subscription's details.</p>
+                <p> What are you waiting for to join the club?</p>
             </div>
                 
         );
