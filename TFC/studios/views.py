@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from studios.models import Studio
+from Classes.models import Class
+from studios.models import Amenities, Studio
 from rest_framework.generics import RetrieveAPIView, UpdateAPIView, DestroyAPIView, CreateAPIView, ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -47,22 +48,39 @@ class FilterStudioView(ListAPIView):
     def get_queryset(self):
         # returns all studios paginated initially
         initial_queryset = Studio.objects.all()  # full with no filters
+
+
         # filtering params
         name = self.request.query_params.get('name', None)
-        # due to unexpected table creation, these have been put on hold for now
-        # amenities = self.request.query_params.get('amenities', None)
-        # class_name = self.request.query_params.get('class_name', None)
-        # coach = self.request.query_params.get('coach', None)
+        amenities = self.request.query_params.get('amenities', None)
+        class_name = self.request.query_params.get('class_name', None)
+        coach = self.request.query_params.get('coach', None)
 
-        print(name)
         if name:
             initial_queryset = initial_queryset.filter(name=name)
-        # if amenities:
-        #     initial_queryset = initial_queryset.filter(amenities=amenities)
-        # if class_name:
-        #     initial_queryset = initial_queryset.filter(class_name=class_name)
-        # if coach:
-        #     initial_queryset = initial_queryset.filter(coach=coach)
+        if amenities:
+            # fetch amenities from amenities table
+            amenities_data = Amenities.objects.filter(type=amenities)
+            # filter out from initial_queryset the studios that are not in amenities_data
+            initial_queryset = initial_queryset.filter(amenities__in=amenities_data)
+        if class_name:
+            # fetch classes with this class_name
+            classes_data = Class.objects.filter(name=class_name)
+            # filter out from initial_queryset the studios that are not in classes_data
+            initial_queryset = initial_queryset.filter(class__in=classes_data)
+        if coach:
+            # fetch classes with this coach
+            classes_coach_data = Class.objects.filter(coach=coach)
+            # filter out from initial_queryset the studios that are not in classes_coach_data
+            initial_queryset = initial_queryset.filter(class__in=classes_coach_data)
 
+        sorted_studios = []
+        current_coordinates = (self.kwargs['lat'], self.kwargs['long'])
+        # sort by studio coordinates inside initial_queryset
+        for studio in initial_queryset:
+            studio_coordinates = (studio.latitude, studio.longitude)
+            sorted_studios.append((geodesic(studio_coordinates, current_coordinates).kilometers, studio))
+
+        sorted_studios = sorted(sorted_studios)
         # serialize data and return data
-        return initial_queryset
+        return [studio[1] for studio in sorted_studios]

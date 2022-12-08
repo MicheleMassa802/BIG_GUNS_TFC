@@ -147,9 +147,6 @@ class SubscriptionView(APIView):
         # otherwise, save the created object
         payment_serializer.save()
 
-        # TODO: finally, reactivate all of the user's classes (if the user was previously subscribed)
-        # this means the 
-
         # return the subscription object just created
         return Response(sub_serializer.data, status=status.HTTP_201_CREATED)
     
@@ -247,8 +244,6 @@ class SubscriptionView(APIView):
         # eliminate both elements in the list
         payments.first().delete()
         payments.first().delete()
-
-        # TODO: set the users enrolled classes to false
 
         return Response({"message": "Subscription deleted"}, status=status.HTTP_204_NO_CONTENT)
 

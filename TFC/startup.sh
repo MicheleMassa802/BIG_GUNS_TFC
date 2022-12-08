@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # assuming python3.10 is in the standard linux path and virtualenv is installed
-python3 -m virtualenv -p /usr/bin/python3.10 venv
+# echo `which python3.10`
+python3 -m virtualenv -p `which python3.10` venv
 source venv/bin/activate
 pip install -r requirements.txt
 python3 manage.py makemigrations
