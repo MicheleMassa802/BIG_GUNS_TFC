@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Text from "../../Text";
 import Input from "../../Input/input";
 import Button from "../../Input/button";
 import CreateSubForm from "./create_form";
+import Sub_context from "../../../Contexts/Sub_context";
 
 // get the data from the user and send it to the backend to create as subscription
 
@@ -13,7 +14,7 @@ import CreateSubForm from "./create_form";
 
 const Sub_Creator = () => {
     // user input stored here as state as its not needed anywhere else in a context
-    const [data, setData] = useState({
+    const [local_sub_data, localSetData] = useState({
         related_user: "",
         sub_type: "",
         sub_start_date: "",
@@ -22,11 +23,13 @@ const Sub_Creator = () => {
     });
 
     const [uploadData, setUploadData] = useState({
-        related_user: 0,
-        sub_type: 0,
+        related_user: "",
+        sub_type: "",
         sub_start_date: "",
         payment_card: "",
     });
+
+    const {subData, setData} = useContext(Sub_context);
 
     const [params, setParams] = useState({
         user_id: 1,  // for now default is 1, see how to set this up correctly using the global context
@@ -53,11 +56,11 @@ const Sub_Creator = () => {
             // if the user has a sub, set the data to the sub object and return true
             if (data.message === undefined){
                 // user has a sub, add is_backend to data and set the data to the sub object
-                setData({...data, is_backend: true});
+                localSetData({...local_sub_data, is_backend: true});
                 return true;
             } else {
                 // user doesn't have a sub, add is_backend to data and set the data to the sub object
-                setData({...data, is_backend: false});
+                localSetData({...local_sub_data, is_backend: false});
                 return false;
             }
         });
@@ -72,7 +75,7 @@ const Sub_Creator = () => {
         Is_subbed();
 
         // make it so that this runs whenever setData is called
-        }, [params, setData]);
+        }, [params, localSetData]);
     
 
     function Submit_form(submission) {
@@ -97,8 +100,10 @@ const Sub_Creator = () => {
                     .then((response) => response.json())
                     .then((data) => {
                         console.log("POST return ", data);
+                        localSetData(data);
                         setData(data);
                         Is_subbed();
+                        // force a rerender of the page with forceUpdate
                     })
                     .catch((error) => {
                         alert("oopsie woopsie I fucky wucky uppy THE FUCKING CODE", error)
@@ -106,7 +111,7 @@ const Sub_Creator = () => {
         //}, [params, uploadData, setData]);
     }
 
-    // function for storing name
+    // function for updating user's input
     const handleInput = e => {
         const newData = {...uploadData,
             related_user: params.user_id,
@@ -116,22 +121,23 @@ const Sub_Creator = () => {
         console.log(newData);
     };
 
-    if (data["is_backend"] === true){
+    if (local_sub_data["is_backend"] === true){
         // data coming from backend means user is subbed
         return (
             <div>
-                <Text> Subscription Details </Text>
+                {/*<Text> Subscription Details </Text>
                 <Text> User: {data.related_user} </Text>
                 <Text> Subscription Type: {data.sub_type} </Text>
                 <Text> Subscription Start Date: {data.sub_start_date} </Text>
-                <Text> Payment Card: {data.payment_card} </Text>
+                <Text> Payment Card: {data.payment_card} </Text>*/}
+                <p> You are already subscribed silly goose :0 </p>
             </div>
                 
         );
     } else {
         return (
             <div>
-                <Text> You are not yet subscribed.Subscribe Here! </Text>
+                <p> You are not yet subscribed.Subscribe Here! </p>
                 <form onSubmit={Submit_form}>
                     <label> Subscription Type: </label>
                     {/* call respective handling functions*/}

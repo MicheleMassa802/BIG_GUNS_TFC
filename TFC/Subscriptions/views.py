@@ -37,7 +37,6 @@ class SubscriptionView(APIView):
         # issues with token authentication lead us to get rid of this functionality, we will try to make
         # it work for the front end, but for now, this must be disabled
 
-
         if filtered_sub.exists():  # even if its an older subscription, we first update, and then return the updated object
             
             # If the user visits this page and is subscribed, we are going to check if their subscription and payment history
@@ -148,6 +147,9 @@ class SubscriptionView(APIView):
         # otherwise, save the created object
         payment_serializer.save()
 
+        # TODO: finally, reactivate all of the user's classes (if the user was previously subscribed)
+        # this means the 
+
         # return the subscription object just created
         return Response(sub_serializer.data, status=status.HTTP_201_CREATED)
     
@@ -246,6 +248,7 @@ class SubscriptionView(APIView):
         payments.first().delete()
         payments.first().delete()
 
+        # TODO: set the users enrolled classes to false
 
         return Response({"message": "Subscription deleted"}, status=status.HTTP_204_NO_CONTENT)
 
