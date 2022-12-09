@@ -1,7 +1,9 @@
 import {useState, useContext} from "react";
 // import UserContext from "../../Contexts/user";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Logval = () => {
+    let navigate = useNavigate()
     // const { setLogin } = useContext(LoginContext);
     
     // useEffect(() => {
@@ -16,15 +18,16 @@ const Logval = () => {
     
     // const { user, setUser } = useContext(UserContext);
 
+    const [IsUpdated, setUpdated] = useState("false");
     const [uploadData, setUploadData] = useState({
         username: "",
-        password: ""
+        password: "",
     });
 
     function submit_login(submission){
         submission.preventDefault();
 
-        const url = 'http://localhost:8000/accounts/api/token/'
+        const url = 'http://127.0.0.1:8000/accounts/api/token/'
         const config = {
             method: "POST",
             headers:{
@@ -35,10 +38,11 @@ const Logval = () => {
         fetch(url, config)
             .then((response) => response.json())
             .then((data) => {
+                console.log(data)
                 if (data.access) {
                     localStorage.setItem('accessToken', 'Bearer ' + data.access);
                     if (localStorage.getItem("accessToken") !== null){
-                        const url2 = 'http://localhost:8000/accounts/user/'
+                        const url2 = 'http://127.0.0.1:8000/accounts/user/'
                         const config2 = {
                             method: "GET",
                             headers:{
@@ -51,11 +55,18 @@ const Logval = () => {
                                 localStorage.setItem('user_id', data);
                             })
                     };
+                    setUpdated("true");
+                    navigate("/");
                 }
-                if (data.refresh){
-                    localStorage.setItem('refreshToken', data.refresh)
+                // if (data.refresh){
+                //     localStorage.setItem('refreshToken', data.refresh)
+                // }
+                if (data.detail){
+                    setUpdated("false");
+                    console.log("test")
+                    console.log(uploadData)
                 }
-        })
+            })
     
     };
     // GOT TO CHECK HOW ERROR HANDLING WORKS, WHAT HAPPENS WHEN USERNAME PASSWORD ARE ENTERED WRONG. ALSO GOT TO REDIRECT USER TO HOME PAGE ONCE LOGGED IN.
@@ -68,6 +79,7 @@ const Logval = () => {
     };
 
     if (localStorage.getItem('accessToken')  === "null"){
+        console.log(uploadData.isBackend)
         return(
             <div>
                 <h1>Login</h1>
@@ -80,6 +92,7 @@ const Logval = () => {
                         
                     <button type="submit" className="loginbutton">Login</button>
                 </form> 
+                {IsUpdated === "false" ? <p></p> : <p>Either Username or Password is incorrect</p>}
             </div>
         )
     } else {
