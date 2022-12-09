@@ -115,7 +115,12 @@ const Delete_sub = () => {
         //}, [params, uploadData, setData]);
     }
 
-    if (local_sub_data["is_backend"] === false){
+    if (params['token'] === 'null'){
+        return <div className="outer-container">
+            <p>You are not logged in. Please log in to access this page.</p>
+        </div>
+
+    } else if (local_sub_data["is_backend"] === false){
         // data coming from backend means user is subbed
         return (
             <div className="container">
@@ -133,7 +138,7 @@ const Delete_sub = () => {
         
         return (
             <div className="container">
-                <p> Dow you wish to cancel your subscription? </p>
+                <p> Do you wish to cancel your subscription? </p>
                 <p> Keep in mind, this will immediately cancel your active membership for the current subscription period   </p>
                 <p> Your current classes will be cancelled, and only re-instated upon re-subscription.</p>
                 <form onSubmit={Submit_delete}>

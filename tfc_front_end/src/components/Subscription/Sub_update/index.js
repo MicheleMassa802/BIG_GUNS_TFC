@@ -125,8 +125,13 @@ const Update_Sub = () => {
     
 
     console.log("selected ", selected);
-    
-    if (local_sub_data["is_backend"] === false){
+
+    if (params['token'] === 'null'){
+        return <div className="outer-container">
+            <p>You are not logged in. Please log in to access this page.</p>
+        </div>
+
+    } else if (local_sub_data["is_backend"] === false){
         // data coming from backend means user is subbed
         return (
             <div className="container">
@@ -143,8 +148,8 @@ const Update_Sub = () => {
     } else {
         
         return (
-            <div>
-                <p> Whatcha wanna update today cunt? </p>
+            <div className="container">
+                <p> Use the following fields to update your current subscription </p>
                 <form onSubmit={Submit_form}>
                     <label> Subscription Type: </label>
                     {/* call respective handling functions*/}

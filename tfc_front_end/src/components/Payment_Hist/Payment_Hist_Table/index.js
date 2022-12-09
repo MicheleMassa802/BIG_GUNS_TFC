@@ -5,7 +5,7 @@ import "./styles.css";
 
 const PaymentHistTable = ({perPage, params}) => {
     const { payment_list } = useContext(PH_context);
-    // console.log("payments", payment_list);
+    console.log("payments", payment_list);
 
 
     return(
@@ -22,20 +22,20 @@ const PaymentHistTable = ({perPage, params}) => {
                 </thead>
                 
                 <tbody>
-                    {payment_list.map((payment, index) => (
-                        <tr key={payment.id}>
-                            <td> {(params.page - 1) * perPage + index + 1} </td>
-                            <td> {payment.related_user} </td>
-                            <td> {payment.payment_card} </td>
-                            <td> {payment.payment_date} </td>
-                            <td> {payment.payment_amount} </td>
-                        </tr>
-                    ))}
-                </tbody>
+                {payment_list.map((payment, index) => (
+                    <tr key={payment.payment_date}>
+                        <td> {(params.page - 1) * perPage + index + 1} </td>
+                        <td> {payment.related_user} </td>
+                        <td> {payment.payment_card} </td>
+                        <td> {payment.payment_date} </td>
+                        <td> {payment.payment_amount} </td>
+                    </tr>
+                ))}
+            </tbody>
             </table>
         </div>
     )
-        
 }
+
 
 export default PaymentHistTable;

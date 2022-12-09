@@ -10,7 +10,7 @@ const Sub_object = () => {
 
     if (subData.length === 0){
         return (
-            <div>
+            <div className="container">
                 Wait a moment...
             </div>
         );

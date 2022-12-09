@@ -121,7 +121,12 @@ const Sub_Creator = () => {
         console.log(newData);
     };
 
-    if (local_sub_data["is_backend"] === true){
+    if (params['token'] === 'null'){
+        return <div className="outer-container">
+            <p>You are not logged in. Please log in to access this page.</p>
+        </div>
+
+    } else if (local_sub_data["is_backend"] === true){
         // data coming from backend means user is subbed
         return (
             <div className="container">

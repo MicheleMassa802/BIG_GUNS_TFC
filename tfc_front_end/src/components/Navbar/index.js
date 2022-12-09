@@ -31,50 +31,122 @@ const Navbar = () => {
     useEffect(() => {handleText();
         handleURL();}, [setLogText, setPath])
     return (
-        // <>
-        //     <nav>
-        //         <Link to="/converter">Converter</Link>
-        //         <Link to="/calculator">Calculator</Link>
-        //         <Link to="/players">Players</Link>
-        //     </nav>
-        // </>
-        <div className="navigation">
+        <div className="papa-container">
             <div className="logo">
-                TFC
+                <div className="text">
+                    TFC
+                </div>
             </div>
-            <nav className="paths">
-                <ul className="items">
-                    <li>
+            <nav className="nav">
+                <ul className="nav-list">
+                    <li className="nav-item">
                         <Link to="/">Home</Link>
                     </li>
-                    <li>
-                        <Link to="/studios">Studios</Link>
+                    <li className="nav-item">
+                        Studios
+                        <ul className="nav-item-drop-studios">
+                            <li className="drop-item">
+                                <Link to="/studios">Studios</Link>
+                                {/* populate with studio methods */}
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <Link to="/classes">Classes</Link>
+                    <li className="nav-item">
+                        Classes
+                        <ul className="nav-item-drop-classes">
+                            <li className="drop-item">
+                                <Link to="/classes">Classes</Link>
+                                {/* populate with class methods */}
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <Link to="/subscriptions">Subscriptions</Link>
+                    <li className="nav-item">
+                        Subscriptions & Payments
+                        <ul className="nav-item-drop">
+                            <li className="drop-item">
+                                <Link to="/get_sub">View Subscription</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/create_sub">Get a Subscription</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/update_sub">Update Subscription</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/cancel_sub">Cancel Subscription</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/payments">View Payments</Link>
+                            </li>
+                        </ul>    
                     </li>
-                    <li>
-                        <Link to={path}>{logText}</Link>
+                    <li className="nav-item">
+                        Your Account
+                        <ul className="nav-item-drop-account">
+                            <li className="drop-item">
+                                Something...
+                                {/* populate with user methods */}
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <Link to="/register">Register</Link>
-                    </li>
-                    <li>
-                        <Link to="/update">Update Profile</Link>
-                    </li>
-                    <li>
-                        <Link to="/payments">Payments</Link>
-                    </li>
-                    <li>
+                    <li className="nav-item">
                         <Link to="/about">About Us</Link>
                     </li>
                 </ul>
             </nav>
-            <Outlet />
+            <Outlet/>
         </div>
+
+        /////////// original navbar
+        // <div className="navigation">
+        //     <div className="logo">
+        //         TFC
+        //     </div>
+        //     <nav className="paths">
+        //         <ul className="items">
+        //             <li>
+        //                 <Link to="/">Home</Link>
+        //             </li>
+        //             {/* <li>
+        //                 <div class="dropdown">
+        //                     <button class="dropbtn">Dropdown 
+        //                     <i class="fa fa-caret-down"></i>
+        //                     </button>
+        //                     <div class="dropdown-content">
+        //                         <a href="#">Link 1</a>
+        //                         <a href="#">Link 2</a>
+        //                         <a href="#">Link 3</a>
+        //                     </div>
+        //                 </div> 
+        //             </li> */}
+        //             <li>
+        //                 <Link to="/studios">Studios</Link>
+        //             </li>
+        //             <li>
+        //                 <Link to="/classes">Classes</Link>
+        //             </li>
+        //             <li>
+        //                 <Link to="/subscriptions">Subscriptions</Link>
+        //             </li>
+        //             <li>
+        //                 <Link to={path}>{logText}</Link>
+        //             </li>
+        //             <li>
+        //                 <Link to="/register">Register</Link>
+        //             </li>
+        //             <li>
+        //                 <Link to="/update">Update Profile</Link>
+        //             </li>
+        //             <li>    
+        //                 <Link to="/payments">Payments</Link>
+        //             </li>
+        //             <li>
+        //                 <Link to="/about">About Us</Link>
+        //             </li>
+        //         </ul>
+        //     </nav>
+        //     <Outlet />
+        // </div>
     )
 }
 

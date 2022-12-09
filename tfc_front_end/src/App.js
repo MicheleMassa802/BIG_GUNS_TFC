@@ -25,6 +25,9 @@ import AllStudioView from './components/Studios';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 function App() {
+
+  localStorage.setItem('perPage', 1);
+
   const about = (<Text>
     This is my seventh time taking CSC309, and inarguably, this is the best assignment I've ever seen.
     Problems are so accurately designed that anyone with their own knowledge and experience have their own takeaways.
