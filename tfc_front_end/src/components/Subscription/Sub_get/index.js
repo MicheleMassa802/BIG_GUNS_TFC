@@ -56,7 +56,7 @@ const Get_Sub = () => {
 
     // if subData is set, then return the data
     if (params['token'] === 'null'){
-        return <div className="outer-container">
+        return <div className="container">
             <p>You are not logged in. Please log in to access this page.</p>
         </div>
 

@@ -1,6 +1,6 @@
 .container{
     margin-top: 10%;
-    margin-left: 20%;
+    /* margin-left: 20%; */
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -11,10 +11,12 @@
 
 .grid{
     align-items: center;
-    margin: 50px;
+    /* margin: 50px; */
+    width: 100%;
     margin-bottom: 1rem;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 /* p{
@@ -26,13 +28,13 @@
     width: 30%;
 } */
 
-h1{
+.grid>h1{
     margin-left: 20px;
     margin-right: 20px;
-    margin-bottom: 80px;
+    margin-bottom: 2%;
     color: white;
     background-color: black;
-    width: 40%;
+    width: 45%;
 }
 
 img{

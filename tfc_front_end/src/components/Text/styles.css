@@ -8,9 +8,8 @@
     align-items: center;
     font-size: 14px;
     /* padding-right: 25%; */
-    padding-top: 0%;
-    margin-top: 0%;
-    padding-bottom: 0%;
+    padding: 0px;
+    
     margin-bottom: 5%;
     /* center the text */
     text-align: center;
@@ -27,8 +26,9 @@ input {
 }
 
 h1 {
-    width: 200px;
+    width: 60%;
     padding-bottom: 0%;
     margin-bottom: 0%;
+
 }
 

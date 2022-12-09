@@ -24,6 +24,7 @@ const Update_Sub = () => {
     });
 
     const { subData, setData} = useContext(Sub_context);
+    const [isUpdated, setUpdated] = useState("false");
 
     const [params, setParams] = useState({
         user_id: localStorage.getItem('user_id'),  // for now default is 1, see how to set this up correctly using the global context
@@ -96,9 +97,11 @@ const Update_Sub = () => {
                         localSetData(data);
                         setData(data);
                         Is_subbed();
+                        setUpdated("true");
                     })
                     .catch((error) => {
                         console.log(error)
+                        setUpdated("false");
                         
                     });
         //}, [params, uploadData, setData]);
@@ -124,7 +127,8 @@ const Update_Sub = () => {
     }, [local_sub_data.sub_type]);
     
 
-    console.log("selected ", selected);
+    // console.log("selected ", selected);
+    console.log(isUpdated)
 
     if (params['token'] === 'null'){
         return <div className="outer-container">
@@ -165,6 +169,7 @@ const Update_Sub = () => {
                     <br></br> 
                     <Button label="Submit"/>
                 </form>
+                {isUpdated === "true" ? <p> You subscription has been updated! </p> : <p></p>}
             </div>
             );
     }
