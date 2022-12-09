@@ -11,7 +11,7 @@ class user(AbstractUser):
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
-    avatar = models.ImageField(null=True, blank=True)
+    avatar = models.TextField(null=True, blank=True)
     phone_number = models.PositiveIntegerField(null=True, blank=True)
 
 # @receiver(post_save, sender=User)
