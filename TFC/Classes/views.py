@@ -17,16 +17,26 @@ from rest_framework.authentication import SessionAuthentication
 from studios.models import Studio
 
 
+class ShowAllClassesView(ListAPIView):
+    queryset = Class.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = ClassSerializer
+    pagination_class = None
+
+
 class ShowStudioClassesView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ClassSerializer
+
+    def get_queryset(self):
+        return
 
     def get(self, request, *args, **kwargs):
         # NOTE: could be related_user = User.objects.get(id=self.kwargs['user_id'])
         # user existance, etc is handled by django
         # print("Self request: ", self.request.user)
         # print("Self.request.name: ", self.request.)
-        # print("kwARGS: ", kwargs['studio_name'])
+        print("kwARGS: ", kwargs['studio_name'])
         studio_info = Studio.objects.filter(name=kwargs['studio_name'])[0]
         print(studio_info)
         classes = Class.objects.filter(studio=studio_info)
@@ -68,7 +78,7 @@ class ShowStudioClassesView(ListAPIView):
         # print(required_classes)
         # sorted_classes = sorted(required_classes, key=operator.attrgetter('start_time'))
         # print(sorted_classes)
-        return Response(required_classes)
+        return Response([required_classes])
 
 
 class ShowUserClassesHistory(ListAPIView):
@@ -152,6 +162,7 @@ class EnrollUserToClasses(ListCreateAPIView):
         recent_enrolled_class = Class.objects.filter(id=post_data_copy['class_info'])[0]
         # CODE FOR MULTI ENROLL classes
         if 'modify_future_classes' not in post_data_copy:
+
             # IMPORTANT! CHECK IF THE USER ALREADY ENROLLED IN THIS CLASS BEFORE (CHECK WITH UNIQUE ID)
             # IF NOT THEN ADD ELSE IGNORE THIS CLASS ADDITION
 
@@ -206,8 +217,55 @@ class EnrollUserToClasses(ListCreateAPIView):
 
             # Make sure you only enroll in those for which after current_date and also after the recent_class_obj
             print("ADD THIS Case!")
-            if post_data_copy['modify_future_classes']:
+            print("WHAT IS MODIFY_FUTURE_CLASS VAL? ", post_data_copy['modify_future_classes'])
+            if post_data_copy['modify_future_classes'] == False or post_data_copy['modify_future_classes'] == "false":
+                print("DO THIS NOT THAT!")
+                # Bulk enroll is False case so do as done before
+                if str(recent_enrolled_class.start_time)[:10] > datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")[
+                                                                0:10] \
+                        and recent_enrolled_class.capacity != 0:
+                    # print(recent_enrolled_class.capacity)
+                    recent_enrolled_class.capacity -= 1
+                    super(Class, recent_enrolled_class).save()
 
+                    user_obj = UserClasses()
+                    user_obj.user = self.request.user
+                    user_obj.class_info = recent_enrolled_class
+                    user_obj.modify_future_classes = False
+                    # class_obj = Class.objects.filter(id=recent_enrolled_class.id)[0]
+                    # Database_obj tries to find the exact same object (with id and what not) to avoid duplicate
+                    # print("Till here")
+                    # print(UserClasses.objects.filter(class_info=recent_enrolled_class))
+                    database_obj = None
+                    if UserClasses.objects.filter(class_info=recent_enrolled_class):
+                        database_obj = UserClasses.objects.filter(class_info=recent_enrolled_class)[0]
+                    all_objects = list(UserClasses.objects.all())
+
+                    if len(all_objects) == 0 or database_obj is None:
+                        # print("Hi? 1")
+                        super(UserClasses, user_obj).save()
+                    else:
+                        exists = False
+                        for obj in all_objects:
+                            # print(obj)
+                            if database_obj.user == obj.user and database_obj.class_info.id == obj.class_info.id:
+                                # print("Umm? 1")
+                                exists = True
+
+                                # print(database_obj.class_info.start_time)
+                                # print(obj.class_info.start_time)
+                        if not exists:
+                            # print('TF 1')
+                            super(UserClasses, user_obj).save()
+                        else:
+                            return Response(
+                                {'message': f'The user has already previously enrolled in class- '
+                                            f'{obj.class_info} with class_id = {obj.class_info.id}! '
+                                            f'Please select future class and try again to '
+                                            f'bulk enroll'})
+
+            if post_data_copy['modify_future_classes'] == "true" or post_data_copy['modify_future_classes'] == True:
+                print("why u here!")
                 # LOOP OVER LIST OF OBJECTS OF THAT CLASS NAME AND ADD THEM IF THEY MATCH THE below condition
                 # list_related_classes denotes classes that have the same name as the enrolled class
 
@@ -251,8 +309,9 @@ class EnrollUserToClasses(ListCreateAPIView):
                         # print(class_det.id)
                         # if any of the class-det.id == any of the user's class_info
                         if track_of_user_objs:
-                            print("Want to add class :", recent_enrolled_class.name)
-                            print("class name :", class_det.name)
+                            # User is already enrolled in some classes
+                            print("Want to add class :", recent_enrolled_class.id)
+                            print("loop class name :", class_det.id)
                             for user_det in track_of_user_objs:
                                 # print("USER_OBJ.ID", user_det.class_info.id)
                                 # print("CHECK: ")
@@ -267,43 +326,45 @@ class EnrollUserToClasses(ListCreateAPIView):
                                                                             0:10] and class_det.capacity != 0 and \
                                                 str(class_det.id) >= request.data['class_info']:
                                             added = True
+
+                                            class_det.capacity -= 1
                                             super(Class, class_det).save()
 
                                             user_obj = UserClasses()
                                             user_obj.user = self.request.user
                                             user_obj.class_info = class_det
                                             user_obj.modify_future_classes = False
-                                            super(UserClasses, user_obj).save()
 
-                                    # New obj not in class so add it if conditions satisfied
-                                # elif class_det.id != user_det.class_info.id and str(class_det.start_time)[
-                                #                                               :10] > datetime.datetime.now(). \
-                                #         strftime("%Y-%m-%d %H:%M:%S")[0:10] and class_det.capacity != 0 and\
-                                #         str(class_det.id) >= request.data['class_info']:
-                                #     # print("class_det id-", class_det.id)
-                                #     # print("user_det id", user_det.class_info.id)
-                                #     print("class name :", class_det.name)
-                                #     super(Class, class_det).save()
-                                #
-                                #     user_obj = UserClasses()
-                                #     user_obj.user = self.request.user
-                                #     user_obj.class_info = class_det
-                                #     user_obj.modify_future_classes = False
-                                #     super(UserClasses, user_obj).save()
+                                            doesExist = UserClasses.objects.filter(class_info=class_det.id)
+                                            if not doesExist:
+                                                super(UserClasses, user_obj).save()
+                                                print("I ADDED WOHOOOOOO BUBLLY!")
+                                            # else:
+                                            #     super(UserClasses, user_obj).delete()
+
+                                            # if a class exists with same name, same studio and same time,
+                                            # then remove user_obj that was recently saved
+                                            # checkClasses = Class.objects.filter(name=user_obj.class_info.name)
+                                            # for cInfo in checkClasses:
+                                            #     if cInfo.studio == user_obj.class_info.studio and \
+                                            #             cInfo.start_time == user_obj.class_info.start_time:
+                                            #         print("1. BOOHOOO MUTHERFUCKA! SUCK IT")
+                                            #         super(UserClasses, user_obj).delete()
+                                            #         break
+
                         else:
-                            # print("dp i come here?")
-                            # Since no such object exist, we can add from that class_info onwards
-                            # print(request.data)
-                            # print("class-", str(class_det.start_time)[:10])
-                            # print("today-", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")[0:10])
-                            # print("Want to add class :", recent_enrolled_class.name)
-                            # print("class name :", class_det.name)
+                            # User is not enrolled in any class
+
+                            print(request.data['class_info'])
+                            print("CLASS DET VARIABLE", class_det.name)
                             if str(class_det.start_time)[:10] > datetime.datetime.now(). \
                                                                         strftime("%Y-%m-%d %H:%M:%S")[
                                                                 0:10] and class_det.capacity != 0 and \
-                                    str(class_det.id) >= request.data['class_info']:
+                                    str(class_det.id) >= str(request.data['class_info']):
                                 # Since we don't have any info anyways for that user, we add the info
                                 # print("Added -", class_det.id)
+
+                                class_det.capacity -= 1
                                 super(Class, class_det).save()
 
                                 user_obj = UserClasses()
@@ -311,16 +372,15 @@ class EnrollUserToClasses(ListCreateAPIView):
                                 user_obj.class_info = class_det
                                 user_obj.modify_future_classes = False
                                 super(UserClasses, user_obj).save()
-
-                    # for class_det in list_classes:
-                    #     class_det.capacity -= 1
-                    #     super(Class, class_det).save()
-                    #
-                    #     user_obj = UserClasses()
-                    #     user_obj.user = self.request.user
-                    #     user_obj.class_info = class_det
-                    #     user_obj.modify_future_classes = False
-                    #     super(UserClasses, user_obj).save()
+                                # # if a class exists with same name, same studio and same time,
+                                # # then remove user_obj that was recently saved
+                                # checkClasses = Class.objects.filter(name=user_obj.class_info.name)
+                                # for cInfo in checkClasses:
+                                #     if cInfo.studio == user_obj.class_info.studio and \
+                                #             cInfo.start_time == user_obj.class_info.start_time:
+                                #         print("2. BOOHOOOO MUTHERFUCKA! SUCK IT")
+                                #         super(UserClasses, user_obj).delete()
+                                #         break
 
                 elif list_related_classes[0].class_info.id == recent_enrolled_class.id:
                     print("I DO THIS!")
@@ -364,7 +424,17 @@ class EnrollUserToClasses(ListCreateAPIView):
                                                     f'classes! '
                                                     f'Please drop the enrolled courses first and try bulk enrolling '
                                                     f'again'})
+
                             super(UserClasses, user_obj).save()
+                            # if a class exists with same name, same studio and same time,
+                            # then remove user_obj that was recently saved
+                            checkClasses = Class.objects.filter(name=user_obj.class_info.name)
+                            for cInfo in checkClasses:
+                                if cInfo.studio == user_obj.class_info.studio and \
+                                        cInfo.start_time == user_obj.class_info.start_time:
+                                    print(" 3. BOOHOOO MUTHERFUCKA! SUCK IT")
+                                    super(UserClasses, user_obj).delete()
+                                    break
                 else:
                     for i in range(1, len(list_related_classes)):
                         if list_related_classes[i].class_info.id > list_related_classes[i - 1].class_info.id and \
@@ -399,6 +469,15 @@ class EnrollUserToClasses(ListCreateAPIView):
                                 if not exists:
                                     # print('TF 3')
                                     super(UserClasses, user_obj).save()
+                                    # if a class exists with same name, same studio and same time,
+                                    # then remove user_obj that was recently saved
+                                    checkClasses = Class.objects.filter(name=user_obj.class_info.name)
+                                    for cInfo in checkClasses:
+                                        if cInfo.studio == user_obj.class_info.studio and \
+                                                cInfo.start_time == user_obj.class_info.start_time:
+                                            print("4. BOOHOOO MUTHERFUCKA! SUCK IT")
+                                            super(UserClasses, user_obj).delete()
+                                            break
                                 else:
                                     return Response(
                                         {'message': f'The user has already previously enrolled in one of more of the '
@@ -430,8 +509,10 @@ class DropUserFromClasses(ListCreateAPIView):
         # Code for dropping single instance of class
         class_to_drop = Class.objects.filter(id=post_data_copy['class_info'])[0]
 
-        if 'modify_future_classes' not in post_data_copy:
+        if 'modify_future_classes' not in post_data_copy or post_data_copy['modify_future_classes'] == "false" \
+                or not post_data_copy['modify_future_classes']:
             # Remove single specified instance of the class
+            print("I came here")
             for user_obj in UserClasses.objects.all():
                 if user_obj.class_info.id == class_to_drop.id:
                     # Remove this user_obj
@@ -468,6 +549,7 @@ class DropUserFromClasses(ListCreateAPIView):
 class FilterStudioClassView(ListAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ClassSerializer
+
     # permission_classes = [IsAuthenticated]
     # authentication_classes = [SessionAuthentication]
 

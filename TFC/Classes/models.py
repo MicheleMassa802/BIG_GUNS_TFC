@@ -47,6 +47,7 @@ class Class(models.Model):
 
     def save(self, *args, **kwargs):
         # Bulk add classes
+        # EXPANSION CASE: Bulk create for new calculated difference weekly classes and add them.
         if self.id is None:
             # New object so bulk create if possible
             super(Class, self).save(*args, **kwargs)
@@ -90,6 +91,7 @@ class Class(models.Model):
 
             # New info for the edited class
             classObj = Class.objects.filter(id=self.id).first()
+            # print("CLASS OBJ INFO ID: ", classObj.id)
 
             # print("IS CANCELLED: ", classObj.is_cancelled)
             # print("EDIT ALL:", classObj.edit_all)
@@ -98,21 +100,65 @@ class Class(models.Model):
             if classObj.edit_all:
                 # Find all objects with the name of class (returns the classObj defined above as well)
                 list_obj = []
+
                 if oldClassObj.name != classObj.name:
                     # Since if name changed, we want to find them wrt what the old name was
                     list_obj += Class.objects.all().filter(name=oldClassObj.name)
                 else:
                     list_obj += Class.objects.all().filter(name=classObj.name)
-                for obj in list_obj:
+
+                print(len(list_obj))
+                print("LIST: ", list_obj)
+                # for obj in list_obj:
+                #     print(obj.id)
+                temp_list = []
+                for i in range(0, len(list_obj)):
+                    print(list_obj[i].id)
+                    obj = list_obj[i]
                     # if its id is before the id of classObj.id, remove it because it marks completed or old class and
                     # we don't need to change for them since it will cause issues.
-                    if obj.id < classObj.id:
-                        list_obj.remove(obj)
+                    # print("class obj id: ", classObj.id)
+                    if not obj.id < classObj.id:
+                        temp_list.append(list_obj[i])
+                    # # if obj.start_time < classObj.start_time:
+                    #     print("removed: ", obj.id)
+                    #     print("time: ", obj.start_time)
+                        # list_obj.remove(obj)
                 # Since if name changed, we want to find them wrt what the old name was
                 print('Count of objects: ', len(list_obj))
                 # Change all such objects date value based on new self saved value for that object
+                list_obj = temp_list
+                print('Count of objects tehee: ', len(list_obj))
+                #####################
+                # EXPANSION CASE ADD NEW CLASSES
 
+                last_class_object = list_obj[-1]
+                print(last_class_object.id)
+                print("Last obj ID & end recursion: ", last_class_object.id, last_class_object.end_recursion)
+                print("Class obj ID & end recursion: ", classObj.id, classObj.end_recursion)
+
+                if last_class_object.end_recursion < classObj.end_recursion:
+                    print("I reach here!")
+                    # print("ID of changed: ", last_class_object.id)
+
+                    num_days = (classObj.end_recursion - last_class_object.start_time).days
+                    num_weeks = num_days // 7
+                    print("Days: ", num_weeks)
+                    if num_weeks > 0:
+                        print("test reach")
+                        for i in range(0, num_weeks):
+                            # Extract latest object
+                            last_class_object = Class.objects.last()
+                            copy = last_class_object
+                            copy.id = copy.id + 1
+                            # Add 7 days to each iteration
+                            copy.start_time += datetime.timedelta(days=7)
+                            copy.end_time += datetime.timedelta(days=7)
+                            super(Class, copy).save()
+
+                ###############
                 for obj in list_obj:
+                    # print(obj.start_time)
 
                     # Change only for those whose date is after the self date
                     # Can't simply reassign obj = classObj
@@ -142,14 +188,39 @@ class Class(models.Model):
                         # Only change time if it changed from previous value
                         # PROBLEM IS I NEVER CHANGE DATES FOR FUTURE OBJECTS EVEN THOGUH THEY AFTER START_TIME OF 1ST OBJ
                         # THUS, IN BELOW FORLOOP I ADD EXTRA 7 DAYS AND 2ND OBJECT AND ONWARDS WE START FROM 15TH AND NOT 8TH NOV
-                        obj.start_time = classObj.start_time
-                        obj.end_time = classObj.end_time
+                        # obj.start_time = classObj.start_time
+                        # obj.end_time = classObj.end_time
                         obj.end_recursion = classObj.end_recursion
                         # obj.is_cancelled = classObj.is_cancelled
                         classObj.edit_all = False
                         obj.edit_all = False
                         # print(obj.edit_all)
                         super(Class, obj).save()
+                        # print("Case!")
+                        # print("OBJ TIME: ", obj.start_time)
+                        # print("RECUTSION NEW: ", classObj.end_recursion)
+
+                        if obj.start_time > classObj.end_recursion:
+                            # print("I workd?")
+                            # The class that existed in the database after the admin decided to "shrink" classes must be
+                            # marked as cancelled but NOT DELETED FROM DATABASE!
+                            obj.is_cancelled = True
+                            super(Class, obj).save()
+
+                    elif obj.start_time == classObj.start_time:
+                        # print("obj under inspection: ", obj.start_time)
+                        # print("obj end_Rec")
+                        # print("EQUAL OBJ END RECURSION: ", obj.end_recursion)
+                        # print("EQUAL CLASSOBJ END RECURSION: ", classObj.end_recursion)
+                        if obj.end_recursion > classObj.end_recursion or obj.start_time > classObj.end_recursion:
+                            print("pronlem!: ", obj.id)
+                            obj.is_cancelled = True
+                            obj.edit_all = False
+                            super(Class, obj).save()
+                        else:
+                            obj.is_cancelled = False
+                            obj.edit_all = False
+                            super(Class, obj).save()
                     else:
                         """
                         Issue is after 1st class if i push 2nd class onwards to start next month from 1st Nov,
@@ -164,20 +235,30 @@ class Class(models.Model):
                         # classObj has a time changed to future i.e rescheduled for future classes
                         # (so reassign) based on current classObj time + 7 days.
                         # In this loop we will simply assign all objects to same day as new future date
-                        obj.start_time = classObj.start_time
-                        obj.end_time = classObj.end_time
-                        obj.end_recursion = classObj.end_recursion
-                        # Save new dates for each of such objects in Model DB
-                        super(Class, obj).save()
-                        print("Obj time: ", obj.start_time)
-                        print("Classobj time: ", classObj.start_time)
+                        print("OBJ TIME: ", obj.start_time)
+                        print("CURRENT OBJ TIME: ", classObj.start_time)
+                        print("OBJ TIME REC: ", obj.end_recursion)
+                        print("CURRENT OBJ TIME REC: ", classObj.end_recursion)
+                        if obj.start_time > classObj.end_recursion:
+                            obj.start_time = classObj.start_time
+                            obj.end_time = classObj.end_time
+                            obj.end_recursion = classObj.end_recursion
+                            # Save new dates for each of such objects in Model DB
+                            super(Class, obj).save()
+                            # print("Obj time: ", obj.start_time)
+                            # print("Classobj time: ", classObj.start_time)
                 # Remove those objects from list_obj whose date is after end recursion date of latest edited object?
                 # Reset the classObj edit_all property to False again
                 super(Class, classObj).save()
 
+                # Account for if I change from class 2/5 onwards but class 2 start time after new end recursion, cancel
+                if classObj.start_time > classObj.end_recursion:
+                    classObj.is_cancelled = True
+                    super(Class, classObj).save()
+
                 # classObj has a time changed to future i.e rescheduled for future classes
                 # (so reassign) based on current classObj time + 7 days
-                print("New len: ", len(list_obj))
+                # print("New len: ", len(list_obj))
                 for i in range(1, len(list_obj)):
                     # PROBLEM: Dates are messed up and don't update for future object dates when current object
                     # date is after the latest object of that class type. aLSO ends up making extra copies

@@ -2,6 +2,10 @@ import React from 'react';
 import {PH_context, usePHContext} from './Contexts/PH_context';
 import StudiosContext from './Contexts/studios_all';
 import { useStudiosContext } from './Contexts/studios_all';
+import { CH_context, useCHContext } from './Contexts/CH_context';
+import ClassesHist from './components/Classes_History';
+import CreateEnroll from './components/Enroll/Enroll_Create';
+import CreateDrop from './components/Drop/Drop_Create';
 import './App.css';
 import Navbar from './components/Navbar';
 import Landing from './components/Landing';
@@ -63,6 +67,13 @@ function App() {
     </StudiosContext.Provider>
   )
 
+  const classesHist = (
+
+    <CH_context.Provider value={useCHContext()}>
+      <ClassesHist />
+    </CH_context.Provider>
+  )
+
   return (
     <BrowserRouter>
         <Routes>
@@ -71,6 +82,9 @@ function App() {
               <Route path="/login" element={<Logval />} />
               <Route path="/logout" element={<Logout />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/class_history" element={classesHist} />
+              <Route path="/enroll" element={<CreateEnroll></CreateEnroll>} />
+              <Route path="/drop" element={<CreateDrop></CreateDrop>} />
               <Route path="/update" element = {<Update />} />
               <Route path="/get_sub" element={getSub} />
               <Route path="/create_sub" element={createSub} />

@@ -3,7 +3,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from Classes.views import ShowStudioClassesView, ShowUserClassesHistory, EnrollUserToClasses, FilterStudioClassView, \
-    DropUserFromClasses
+    DropUserFromClasses, ShowAllClassesView
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -12,6 +12,7 @@ app_name = "Classes"
 urlpatterns = [
     path('<str:studio_name>/', ShowStudioClassesView.as_view(), name='studio-classes'),
     path('user/<int:user_id>/', ShowUserClassesHistory.as_view(), name='user-classes'),
+    path('viewAllStudioClasses/allClasses/', ShowAllClassesView.as_view(), name='all-studio-classes'),
     path('user/enroll/<int:user_id>/', EnrollUserToClasses.as_view(), name='user-classes'),
     path('user/drop/<int:user_id>/', DropUserFromClasses.as_view(), name='drop-classes'),
     path('<int:studio_id>/find_class/', FilterStudioClassView.as_view()),
