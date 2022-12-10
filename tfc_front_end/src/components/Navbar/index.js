@@ -47,7 +47,9 @@ const Navbar = () => {
                         <ul className="nav-item-drop-studios">
                             <li className="drop-item">
                                 <Link to="/studios">Studios</Link>
-                                {/* populate with studio methods */}
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/filter_studios">Filter Studios</Link>
                             </li>
                         </ul>
                     </li>
@@ -62,6 +64,9 @@ const Navbar = () => {
                             </li>
                             <li className="drop-item">
                                 <Link to="/class_history">View class history</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/filter_classes">Filter Classes</Link>
                             </li>
                         </ul>    
                     </li>

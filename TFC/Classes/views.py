@@ -550,7 +550,7 @@ class DropUserFromClasses(ListCreateAPIView):
 
 
 class FilterStudioClassView(ListAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     serializer_class = ClassSerializer
 
     # permission_classes = [IsAuthenticated]
@@ -558,7 +558,10 @@ class FilterStudioClassView(ListAPIView):
 
     def get_queryset(self):
 
-        initial_queryset = Class.objects.filter(studio=self.kwargs['studio_id'])  # full with no filters
+        # get the id of the corresponding studio name in the kwargs
+        studio_id = Studio.objects.filter(name=self.kwargs['studio_name']).values('id')[0]['id']
+
+        initial_queryset = Class.objects.filter(studio=studio_id)  # full with no filters
 
         # filtering params
         name = self.request.query_params.get('class_name', None)

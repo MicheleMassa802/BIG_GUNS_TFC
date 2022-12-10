@@ -15,12 +15,15 @@ const Update = () =>{
 
     function submit_update(submission){
         submission.preventDefault();
-        const { user_id } = localStorage.getItem('user_id')
-        const url = `http://127.0.0.1:8000/accounts/${user_id}/update/`
+        const user_id  = localStorage.getItem('user_id');
+        const token = localStorage.getItem('accessToken');
+        const url = `http://127.0.0.1:8000/accounts/${user_id}/update/`;
+        console.log("url", url, "user_id", user_id);
         const config = {
             method: "PATCH",
             headers:{
-                "Content-type": "application/json"
+                "Content-type": "application/json",
+                "Authorization": `${token}`
             },
             body: JSON.stringify(uploadData)
         };
@@ -68,7 +71,7 @@ const Update = () =>{
                 <input type="file" name='avatar' id='avatar' onChange={handleImage} />
 
                 <label for="PhoneNumber"><p>Phone Number</p></label>
-                <input type="number" name='phone_number' id='phone_number' onChange={handleInput} />
+                <input type="number" name='phone_number' id='phone_number' required onChange={handleInput} />
 
                 <button type="submit" className="updatebutton">Update</button>
             </form>

@@ -52,7 +52,7 @@ const Create_Enroll = () => {
     //     .then((data) => {
     //         //console.log("GET")
     //         // if the user has a sub, set the data to the sub object and return true
-    //         if (data.message === undefined){
+    //         if (data === undefined){
     //             // user has a sub, add is_backend to data and set the data to the sub object
     //             setData({...data, is_backend: true});
     //             return true;

@@ -27,6 +27,9 @@ import { useIndStudiosContext } from './Contexts/Ind_studio';
 import StudioDetails from './components/Ind_Studio';
 import Profile from './components/Profile';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {FilterContext, useFilterContext} from './Contexts/Filter_context';
+import FilterClass from './components/Filters/Class_Filter/FilterClass';
+import FilterStudio from './components/Filters/Studio_Filter/FilterStudio';
 
 function App() {
 
@@ -86,6 +89,18 @@ function App() {
       <StudioDetails />
     </IndStudiosContext.Provider>
   )
+  
+  const filtered_classes = (
+    <FilterContext.Provider value={useFilterContext()}>
+      <FilterClass></FilterClass>
+    </FilterContext.Provider>
+  )
+
+  const filtered_studios = (
+    <FilterContext.Provider value={useFilterContext()}>
+      <FilterStudio></FilterStudio>
+    </FilterContext.Provider>
+  )
 
   return (
     <BrowserRouter>
@@ -108,6 +123,8 @@ function App() {
               <Route path="/studios" element={studios} />
               <Route path='/details/:studioId' element={StudioInfo} />
               <Route path='/profile' element={<Profile />} />
+              <Route path="/filter_classes" element={filtered_classes} />
+              <Route path="/filter_studios" element={filtered_studios} />
             </Route>
             {/* <Route index element={<Landing />} /> */}
         </Routes>

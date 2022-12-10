@@ -106,7 +106,7 @@ const Sub_Creator = () => {
                         // force a rerender of the page with forceUpdate
                     })
                     .catch((error) => {
-                        alert("oopsie woopsie I fucky wucky uppy THE FUCKING CODE", error)
+                        alert("oops", error)
                     });
         //}, [params, uploadData, setData]);
     }

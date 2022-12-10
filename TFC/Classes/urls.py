@@ -15,7 +15,7 @@ urlpatterns = [
     path('viewAllStudioClasses/allClasses/', ShowAllClassesView.as_view(), name='all-studio-classes'),
     path('user/enroll/<int:user_id>/', EnrollUserToClasses.as_view(), name='user-classes'),
     path('user/drop/<int:user_id>/', DropUserFromClasses.as_view(), name='drop-classes'),
-    path('<int:studio_id>/find_class/', FilterStudioClassView.as_view()),
+    path('<str:studio_name>/find_class/', FilterStudioClassView.as_view()),
 
     # used to generate token (vid 4 1:32:00), to then access django api at
     # 8000/Subscriptions/<user_id>/update_subscription/edit/
