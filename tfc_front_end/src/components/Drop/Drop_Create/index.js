@@ -201,6 +201,9 @@ const Create_Drop = () => {
     // var isData = true;
     // var nextPage = 1;
     // WEDNESDAY & WORKING CODE
+    const [local_sub_data, localSetData] = useState({
+        is_backend: false,
+    });
     const [params, setParams] = useState({
         user_id: localStorage.getItem("user_id"),  
         token: localStorage.getItem("accessToken")
@@ -225,9 +228,19 @@ const Create_Drop = () => {
             fetch(url, config)
             .then((response) => response.json())
             .then((data) => {
-                console.log("GET returned INFO:  ", data.results);
-                // Save to state
-                setAllClasses(data)
+                if (data.message === undefined){
+                    // user has a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: true});
+                    console.log("GET returned INFO:  ", data.results);
+                    // Save to state
+                    setAllClasses(data)
+                    //return true;
+                } else {
+                    // user doesn't have a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: false});
+                    //return false;
+                }
+                
             })
             .catch((error) => {
                 alert("oopsie woopsie I fucky wucky uppy THE FUCKING CODE", error)
@@ -310,6 +323,18 @@ const Create_Drop = () => {
                 },      
             })
             .then((response) => {
+                if (response.data.message === undefined){
+                    // user has a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: true});
+                    // console.log("GET returned INFO:  ", data.results);
+                    // // Save to state
+                    // setAllClasses(data);
+                    //return true;
+                } else {
+                    // user doesn't have a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: false});
+                    //return false;
+                }
                 console.log("SENDING DATA: ", response.data);
             });
         }catch(error){
@@ -317,9 +342,9 @@ const Create_Drop = () => {
         }
     }
 
-
+    console.log("LOCAL SUB DATA: ", local_sub_data["is_backend"])
     console.log("PARAMS TOEKN: ", params.token)
-    if (params.token != 'null'){
+    if (params.token != 'null' && local_sub_data["is_backend"] === true){
         return (
             <div className="container">
                 <Text> Drop from classes! </Text>
@@ -357,6 +382,10 @@ const Create_Drop = () => {
             </div>
             );
     }
+    else if (local_sub_data["is_backend"] === false){
+        return (<Text> You are not subscribed. Please subscribe to enroll in classes!</Text>);
+    }
+
     else{
         return (<Text> You are not subscribed. Please subscribe</Text>);
     }

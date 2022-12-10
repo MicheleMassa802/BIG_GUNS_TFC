@@ -13,6 +13,10 @@ const ClassesHist = () => {
         token: localStorage.getItem("accessToken")
     });
 
+    const [local_sub_data, localSetData] = useState({
+        is_backend: false,
+    });
+
     const { setUserClasses } = useContext(CH_context);
 
     useEffect(() => {
@@ -28,14 +32,27 @@ const ClassesHist = () => {
         
         fetch(url, config)
             .then(res => res.json())
-            .then(jsonData => {
+            .then(data => {
+                if (data.message === undefined){
+                    // user has a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: true});
+                    setUserClasses(data);
+                    //return true;
+                } else {
+                    // user doesn't have a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: false});
+                    //return false;
+                }
                 // console.log("1", json);
-                setUserClasses(jsonData); 
+                 
                 
             })
     }, [params, setUserClasses]);
 
-    if (params.token != 'null'){
+    console.log("PARAM TOKEN DISPLAY: ", params.token)
+    console.log("local sub: ", local_sub_data["is_backend"])
+
+    if (params.token != 'null' && local_sub_data["is_backend"] === true){
         return (
             <div className="outer-container">
                 <Classes_Hist_Table perPage={perPage} params={params} />
@@ -52,6 +69,9 @@ const ClassesHist = () => {
                 
             </div>
         )
+    }
+    else if (local_sub_data["is_backend"] === false){
+        return (<Text> You are not subscribed. Please subscribe to enroll in classes!</Text>);
     }
     else{
         return (<Text> You are not subscribed. Please subscribe to enroll in classes!</Text>);

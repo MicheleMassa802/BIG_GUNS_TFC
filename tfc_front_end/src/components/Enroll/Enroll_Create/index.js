@@ -197,6 +197,10 @@ const Create_Enroll = () => {
 
     //////////////////////////////////////////////////////////////////////////////
     // WEDNESDAY WORKING CODE
+    const [local_sub_data, localSetData] = useState({
+        is_backend: false,
+    });
+
     const [params, setParams] = useState({
         user_id: localStorage.getItem("user_id"),  
         token: localStorage.getItem("accessToken")
@@ -217,10 +221,20 @@ const Create_Enroll = () => {
         fetch(url, config)
             .then((response) => response.json())
             .then((data) => {
+                if (data.message === undefined){
+                    // user has a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: true});
+                    console.log("GET returned INFO:  ", data.results);
+                    // Save to state
+                    setAllClasses(data);
+                    //return true;
+                } else {
+                    // user doesn't have a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: false});
+                    //return false;
+                }
                 // console.log("DATA RETURNED: ", data)
-                console.log("GET returned INFO:  ", data.results);
-                // Save to state
-                setAllClasses(data);
+                
                 // Is_subbed();
             })
             .catch((error) => {
@@ -304,6 +318,19 @@ const Create_Enroll = () => {
                 },      
             })
             .then((response) => {
+                if (response.data.message === undefined){
+                    // user has a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: true});
+                    // console.log("GET returned INFO:  ", data.results);
+                    // // Save to state
+                    // setAllClasses(data);
+                    //return true;
+                } else {
+                    // user doesn't have a sub, add is_backend to data and set the data to the sub object
+                    localSetData({...local_sub_data, is_backend: false});
+                    //return false;
+                }
+                console.log("response info: ", response.data.message)
                 console.log("SENDING DATA: ", response.data);
             });
 
@@ -314,7 +341,7 @@ const Create_Enroll = () => {
 
     //var options_with_classes = 
     console.log("PARAMS TOEKN: ", params.token)
-    if (params.token != 'null'){
+    if (params.token != 'null' && local_sub_data["is_backend"] === true){
         return (
             <div className="container">
                 <Text> Enroll in classes! </Text>
@@ -351,6 +378,9 @@ const Create_Enroll = () => {
                 {/* </form> */}
             </div>
             );
+    }
+    else if (local_sub_data["is_backend"] === false){
+        return (<Text> You are not subscribed. Please subscribe to enroll in classes!</Text>);
     }
     else{
         return (<Text> You are not subscribed. Please subscribe</Text>);
