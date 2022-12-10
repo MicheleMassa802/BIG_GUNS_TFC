@@ -4,6 +4,7 @@ import Input from "../../Input/input";
 import Button from "../../Input/button";
 import CreateEnrollForm from "./enroll_form";
 import axios, { all } from 'axios';
+import "./styles.css";
 
 
 
@@ -197,11 +198,11 @@ const Create_Enroll = () => {
     //////////////////////////////////////////////////////////////////////////////
     // WEDNESDAY WORKING CODE
     const [params, setParams] = useState({
-        user_id: 1,  // for now default is 1, see how to set this up correctly using the global context
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwNjAyNzkyLCJpYXQiOjE2NzA1MTYzOTIsImp0aSI6ImMwMDI0ZjFiYTUwYjQzZThhZWYxNmFiYTAxZGQ5ZDgxIiwidXNlcl9pZCI6MX0.0x4Va-HVQaUVq72_sGEmvAqHSLKpbgThViM7BSk82eU',
+        user_id: localStorage.getItem("user_id"),  
+        token: localStorage.getItem("accessToken")
     });
     const [allClasses, setAllClasses] = useState([]);
-    const {user_id, token} = params;
+    //const {user_id, token} = params;
     const url = `http://127.0.0.1:8000/classes/viewAllStudioClasses/allClasses/`;
     // Fetch data of all studio and all for now but do changes as explained in other comment about new url path 
     useEffect(() => {
@@ -209,13 +210,14 @@ const Create_Enroll = () => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `${params.token}`,
             },
         };
 
         fetch(url, config)
             .then((response) => response.json())
             .then((data) => {
+                // console.log("DATA RETURNED: ", data)
                 console.log("GET returned INFO:  ", data.results);
                 // Save to state
                 setAllClasses(data);
@@ -282,6 +284,7 @@ const Create_Enroll = () => {
     }
 
     //console.log("FORM DATA ENTERED: ", enrollData)
+    console.log("WHAT IS ALL CLASSES: ", allClasses)
 
     const submitEnrollData = () => {
         const enrollFormData = new FormData();
@@ -296,54 +299,63 @@ const Create_Enroll = () => {
             axios.post(`http://127.0.0.1:8000/classes/user/enroll/${enrollData.user}/`, enrollFormData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `${params.token}`,
                     
                 },      
             })
             .then((response) => {
                 console.log("SENDING DATA: ", response.data);
             });
+
         }catch(error){
             console.log("ERROR MESSAGE: ", error);
         }
-        
     }
 
     //var options_with_classes = 
-    console.log("")
-    return (
-        <div>
-            <Text> Enroll in classes! </Text>
-            {/* <form onSubmit={form_submit}> */}
-                <label > Drop you wish to enroll in future classes (default response is <b>No</b>)?</label>
-                {/* call respective handling functions*/}
-                <input type="radio" id="yes" name="modify_future_classes" value={true} onChange={handleFormChange}/>
-                <label htmlFor="yes"> Yes </label>
-                <br></br>
-                <label for="class_info"> Class to enroll in:  </label>
-                <select name="class_info" onChange={handleFormChange}>
-                    <>
-                    <option selected disabled hidden>Select a class </option>
-                    {allClasses.map((classObj, index) => {return <option key={index} >{
-                    `(ID: ${classObj.id})` + ' ' + 
-                    classObj.name + ' on ' + classObj.start_time.replace('T', ' ').replace('Z', '')}</option>}
-                    )}
-                    </>
+    console.log("PARAMS TOEKN: ", params.token)
+    if (params.token != 'null'){
+        return (
+            <div className="container">
+                <Text> Enroll in classes! </Text>
+                {/* <form onSubmit={form_submit}> */}
+                    <label > Do you wish to enroll in future classes (default response is <b>No</b>)     ?                          
+                    <input type="radio" id="yes" name="modify_future_classes" value={true} onChange={handleFormChange}/>
+                    <label htmlFor="yes"> Yes </label>
+                    </label>
+                    {/* call respective handling functions*/}
+                    <br></br>
                     
-                </select>
-
-                {/* <Select options={allClasses}
-                defaultValue={{label: "Choose one", value: ""}}>
-                    {allClasses.map((classObj, index) => {return <option key={index} defaultValue={classObj.id} >{
-                    `(ID: ${classObj.id})` + ' ' + 
-                    classObj.name + ' on ' + classObj.start_time.replace('T', ' ').replace('Z', '')}</option>}
-                    )}</Select> */}
-                <br></br> 
-
-                <button onClick={submitEnrollData} type="submit"> Enroll </button>
-            {/* </form> */}
-        </div>
-        );
+                    
+                    <br></br>
+                    <label for="class_info"> Class to enroll in:  </label>
+                    <select name="class_info" onChange={handleFormChange}>
+                        <>
+                        <option selected disabled hidden>Select a class </option>
+                        {allClasses.map((classObj, index) => {return <option key={index} >{
+                        `(ID: ${classObj.id})` + ' ' + 
+                        classObj.name + ' on ' + classObj.start_time.replace('T', ' ').replace('Z', '')}</option>}
+                        )}
+                        </>
+                        
+                    </select>
+    
+                    {/* <Select options={allClasses}
+                    defaultValue={{label: "Choose one", value: ""}}>
+                        {allClasses.map((classObj, index) => {return <option key={index} defaultValue={classObj.id} >{
+                        `(ID: ${classObj.id})` + ' ' + 
+                        classObj.name + ' on ' + classObj.start_time.replace('T', ' ').replace('Z', '')}</option>}
+                        )}</Select> */}
+    
+                    <button onClick={submitEnrollData} type="submit"> Enroll </button>
+                {/* </form> */}
+            </div>
+            );
+    }
+    else{
+        return (<Text> You are not subscribed. Please subscribe</Text>);
+    }
+    
 
     // if (data["is_backend"] === true){
     //     // data coming from backend means user is subbed

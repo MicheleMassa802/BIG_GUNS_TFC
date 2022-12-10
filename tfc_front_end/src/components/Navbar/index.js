@@ -52,13 +52,18 @@ const Navbar = () => {
                         </ul>
                     </li>
                     <li className="nav-item">
-                        Classes
-                        <ul className="nav-item-drop-classes">
+                       Classes Information
+                        <ul className="nav-item-drop">
                             <li className="drop-item">
-                                <Link to="/classes">Classes</Link>
-                                {/* populate with class methods */}
+                                <Link to="/enroll">Enroll in classes</Link>
                             </li>
-                        </ul>
+                            <li className="drop-item">
+                                <Link to="/drop">Drop from classes</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/class_history">View class history</Link>
+                            </li>
+                        </ul>    
                     </li>
                     <li className="nav-item">
                         Subscriptions & Payments

@@ -6,7 +6,7 @@ import "./styles.css";
 
 const Sub_object = () => {
     const { subData } = useContext(Sub_context);
-    //console.log("subData", subData);
+    console.log("subData", subData);
 
     if (subData.length === 0){
         return (

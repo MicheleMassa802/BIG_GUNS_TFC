@@ -86,6 +86,9 @@ class ShowUserClassesHistory(ListAPIView):
     # serializer_class = ClassSerializer
     serializer_user = UserSerializer
 
+    def get_queryset(self):
+        return 
+        
     def get(self, request, *args, **kwargs):
         # make sure user is not already subscribed
         is_subbed = Subscription.objects.filter(related_user=request.user).exists()

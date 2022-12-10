@@ -4,6 +4,7 @@ import Input from "../../Input/input";
 import Button from "../../Input/button";
 import CreateDropForm from "./drop_form";
 import axios from 'axios';
+import "./styles.css";
 
 
 
@@ -201,11 +202,11 @@ const Create_Drop = () => {
     // var nextPage = 1;
     // WEDNESDAY & WORKING CODE
     const [params, setParams] = useState({
-        user_id: 1,  // for now default is 1, see how to set this up correctly using the global context
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjcwNjAyNzkyLCJpYXQiOjE2NzA1MTYzOTIsImp0aSI6ImMwMDI0ZjFiYTUwYjQzZThhZWYxNmFiYTAxZGQ5ZDgxIiwidXNlcl9pZCI6MX0.0x4Va-HVQaUVq72_sGEmvAqHSLKpbgThViM7BSk82eU',
+        user_id: localStorage.getItem("user_id"),  
+        token: localStorage.getItem("accessToken")
     });
     const [allClasses, setAllClasses] = useState([]);
-    const {user_id, token} = params;
+    //const {user_id, token} = params;
 
     //console.log("What is next page? :", nextPage.pNo);
     // Fetch data of all studio and all for now but do changes as explained in other comment about new url path 
@@ -215,7 +216,7 @@ const Create_Drop = () => {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
+                "Authorization": `${params.token}`,
             },
         };
         
@@ -304,7 +305,7 @@ const Create_Drop = () => {
             axios.post(`http://127.0.0.1:8000/classes/user/drop/${dropData.user}/`, dropFormData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `${params.token}`,
                     
                 },      
             })
@@ -314,37 +315,51 @@ const Create_Drop = () => {
         }catch(error){
             console.log("ERROR MESSAGE: ", error);
         }
-        
     }
 
 
-    return (
-        <div>
-            <Text> Drop from classes! </Text>
-            {/* <form onSubmit={form_submit}> */}
-                <label > Drop you wish to drop form future classes (default response is <b>No</b>)? </label>
-                {/* call respective handling functions*/}
-                <input type="radio" id="yes" name="modify_future_classes" value={true} onChange={handleFormChange}/>
-                <label htmlFor="yes"> Yes </label>
-                <br></br>
-                <label for="class_info"> Class to drop from:  </label>
-                
-                <select name="class_info" onChange={handleFormChange}>
-                    <>
-                    <option selected disabled hidden>Select a class </option>
-                    {allClasses.map((classObj, index) => {return <option key={index} >{
-                    `(ID: ${classObj.id})` + ' ' + 
-                    classObj.name + ' on ' + classObj.start_time.replace('T', ' ').replace('Z', '')}</option>}
-                    )}
-                    </>
+    console.log("PARAMS TOEKN: ", params.token)
+    if (params.token != 'null'){
+        return (
+            <div className="container">
+                <Text> Drop from classes! </Text>
+                {/* <form onSubmit={form_submit}> */}
+                    <label > Do you wish to enroll in future classes (default response is <b>No</b>)     ?                          
+                    <input type="radio" id="yes" name="modify_future_classes" value={true} onChange={handleFormChange}/>
+                    <label htmlFor="yes"> Yes </label>
+                    </label>
+                    {/* call respective handling functions*/}
+                    <br></br>
                     
-                </select>
-                <br></br> 
-
-                <button onClick={submitDropData} type="submit"> Drop </button>
-            {/* </form> */}
-        </div>
-        );
+                    
+                    <br></br>
+                    <label for="class_info"> Class to drop from  </label>
+                    <select name="class_info" onChange={handleFormChange}>
+                        <>
+                        <option selected disabled hidden>Select a class </option>
+                        {allClasses.map((classObj, index) => {return <option key={index} >{
+                        `(ID: ${classObj.id})` + ' ' + 
+                        classObj.name + ' on ' + classObj.start_time.replace('T', ' ').replace('Z', '')}</option>}
+                        )}
+                        </>
+                        
+                    </select>
+    
+                    {/* <Select options={allClasses}
+                    defaultValue={{label: "Choose one", value: ""}}>
+                        {allClasses.map((classObj, index) => {return <option key={index} defaultValue={classObj.id} >{
+                        `(ID: ${classObj.id})` + ' ' + 
+                        classObj.name + ' on ' + classObj.start_time.replace('T', ' ').replace('Z', '')}</option>}
+                        )}</Select> */}
+    
+                    <button onClick={submitDropData} type="submit"> Drop </button>
+                {/* </form> */}
+            </div>
+            );
+    }
+    else{
+        return (<Text> You are not subscribed. Please subscribe</Text>);
+    }
 
     // if (data["is_backend"] === true){
     //     // data coming from backend means user is subbed
