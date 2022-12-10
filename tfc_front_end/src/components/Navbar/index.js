@@ -86,11 +86,19 @@ const Navbar = () => {
                         </ul>    
                     </li>
                     <li className="nav-item">
-                        Your Account
+                    Account Information
                         <ul className="nav-item-drop-account">
                             <li className="drop-item">
-                                Something...
-                                {/* populate with user methods */}
+                                <Link to="/register">Register</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to={path}>{logText}</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/profile">View Profile</Link>
+                            </li>
+                            <li className="drop-item">
+                                <Link to="/update">Update Profile</Link>
                             </li>
                         </ul>
                     </li>

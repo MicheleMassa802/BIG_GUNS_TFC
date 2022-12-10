@@ -25,8 +25,8 @@ class GetProfile(RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     
-    def get(self, request, *args, **kwargs):
-        return Response(self.request.user)
+    # def get(self, request, *args, **kwargs):
+    #     return Response(self.request.user)
 
 class CreateUserView(CreateAPIView):
     model = user

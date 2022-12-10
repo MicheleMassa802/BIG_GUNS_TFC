@@ -22,6 +22,10 @@ import Get_Sub from './components/Subscription/Sub_get';
 import Update_Sub from './components/Subscription/Sub_update';
 import Delete_sub from './components/Subscription/Sub_del';
 import AllStudioView from './components/Studios';
+import IndStudiosContext from './Contexts/Ind_studio';
+import { useIndStudiosContext } from './Contexts/Ind_studio';
+import StudioDetails from './components/Ind_Studio';
+import Profile from './components/Profile';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 
 function App() {
@@ -77,6 +81,12 @@ function App() {
     </CH_context.Provider>
   )
 
+  const StudioInfo = (
+    <IndStudiosContext.Provider value={useIndStudiosContext()}>
+      <StudioDetails />
+    </IndStudiosContext.Provider>
+  )
+
   return (
     <BrowserRouter>
         <Routes>
@@ -96,6 +106,8 @@ function App() {
               <Route path="/payments" element={payments} />
               <Route path="/about" element={about} />
               <Route path="/studios" element={studios} />
+              <Route path='/details/:studioId' element={StudioInfo} />
+              <Route path='/profile' element={<Profile />} />
             </Route>
             {/* <Route index element={<Landing />} /> */}
         </Routes>

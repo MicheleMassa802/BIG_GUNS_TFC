@@ -1,6 +1,7 @@
 import {createContext, useContext, useState, useEffect} from "react";
 import StudiosContext from "../../Contexts/studios_all";
 import StudiosTable from "./Studios_table";
+import './style.css'
 
 const AllStudioView = () => {
 
@@ -47,8 +48,10 @@ const AllStudioView = () => {
     
     return (
             <>
-                <StudiosTable perPage={perPage} params={params} />
-                <button onClick={() => setParams({
+            <div className="outer-container">
+            <StudiosTable perPage={perPage} params={params} />
+            <div className="buttons">
+            <button onClick={() => setParams({
                     ...params,
                     page: Math.max(1, params.page - 1)})}> prev 
                 </button>
@@ -56,6 +59,8 @@ const AllStudioView = () => {
                     ...params,
                     page: next === null ? params.page : params.page + 1})}> next
                 </button>
+            </div>
+            </div>
             </>
         )
 }

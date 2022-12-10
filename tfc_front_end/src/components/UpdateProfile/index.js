@@ -1,5 +1,7 @@
 import React from 'react'
 import {useState} from "react";
+import Text from '../Text';
+import './style.css'
 
 const Update = () =>{
     const [uploadData, setUploadData] = useState({
@@ -14,7 +16,7 @@ const Update = () =>{
     function submit_update(submission){
         submission.preventDefault();
         const { user_id } = localStorage.getItem('user_id')
-        const url = `http://localhost:8000/accounts/${user_id}/update/`
+        const url = `http://127.0.0.1:8000/accounts/${user_id}/update/`
         const config = {
             method: "PATCH",
             headers:{
@@ -34,30 +36,38 @@ const Update = () =>{
         setUploadData(newData)
     };
 
-    return(
-        <div>
-            <form onSubmit={submit_update} >
-                <div className='Title'>
-                    <h1>Update your Profile</h1>
-                    <h2>Please enter the information below to update your profile</h2>
-                </div>
+    const handleImage = e => {
+        console.log("Image Handling")
+        const newData = {...uploadData}
+        newData[e.target.name] = URL.createObjectURL(e.target.files[0]);
+        setUploadData(newData)
+        console.log(uploadData)
+    }
 
-                <label for="Password"><b>Password</b></label>
+    return(
+        <div className='container'>
+            <div className='Title'>
+                    <Text>Update your Profile</Text>
+                    <p>Please enter the information below to update your profile</p>
+                </div>
+            <form onSubmit={submit_update} >
+
+                <label for="Password"><p>Password</p></label>
                 <input type="password" placeholder='Enter Password' name='password' id='password' required onChange={handleInput} />
 
-                <label for="Email"><b>Email</b></label>
+                <label for="Email"><p>Email</p></label>
                 <input type="email" placeholder='Enter Email' name='email' id='email' />
 
-                <label for="FirstName"><b>First Name</b></label>
+                <label for="FirstName"><p>First Name</p></label>
                 <input type="text" placeholder='Enter First Name' name='first_name' id='first_name' onChange={handleInput} />
 
-                <label for="LastName"><b>Last Name</b></label>
+                <label for="LastName"><p>Last Name</p></label>
                 <input type="text" placeholder='Enter Last Name' name='last_name' id='last_name' onChange={handleInput} />
 
-                <label for="Avatar"><b>Avaatar</b></label>
-                <input type="image" name='avatar' id='avatar' onChange={handleInput} />
+                <label for="Avatar"><p>Avaatar</p></label>
+                <input type="file" name='avatar' id='avatar' onChange={handleImage} />
 
-                <label for="PhoneNumber"><b>Phone Number</b></label>
+                <label for="PhoneNumber"><p>Phone Number</p></label>
                 <input type="number" name='phone_number' id='phone_number' onChange={handleInput} />
 
                 <button type="submit" className="updatebutton">Update</button>

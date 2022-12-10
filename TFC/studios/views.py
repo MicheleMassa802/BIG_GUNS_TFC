@@ -60,7 +60,7 @@ class FilterStudioView(ListAPIView):
             initial_queryset = initial_queryset.filter(class__in=classes_coach_data)
 
         sorted_studios = []
-        current_coordinates = (self.kwargs['lat'], self.kwargs['long'])
+        current_coordinates = (self.request.query_params.get('lat'), self.request.query_params.get('long'))
         # sort by studio coordinates inside initial_queryset
         for studio in initial_queryset:
             studio_coordinates = (studio.latitude, studio.longitude)

@@ -27,7 +27,7 @@ class Images(models.Model):
         verbose_name = 'Images'
         verbose_name_plural = 'Images'
     studio = models.ForeignKey(to=Studio, related_name='images', on_delete=SET_NULL, null=True)
-    image = models.ImageField()
+    image = models.ImageField(upload_to='images')
 
 
 class Amenities(models.Model):
